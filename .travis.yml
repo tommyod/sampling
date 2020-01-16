@@ -35,7 +35,7 @@ install:
   - pip list # List installed packages
   
 # -------------------- script: run the build script ---------------------------
-before_script:
+script:
   - pip install . # Install the package
   - pip show sampling # Show information about the package
   - black . -l 120 --check # Check that code is formatted correctly w.r.t. black
