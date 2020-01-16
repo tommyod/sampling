@@ -43,7 +43,6 @@ before_script:
 
 script:
   # Install the test package before running the tests
-  - pip install sampling/tests
   - pytest sampling --verbose --doctest-modules --color=yes # Run all tests
 
 # -------------------- deploy: deploy to PyPI if it's a tagged commit ---------
