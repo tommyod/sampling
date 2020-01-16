@@ -38,7 +38,7 @@ install:
 before_script:
   - pip install . # Install the package
   - pip show sampling # Show information about the package
-  - black . --check # Check that code is formatted correctly w.r.t. black
+  - black . -l 120 --check # Check that code is formatted correctly w.r.t. black
   - flake8 sampling --select=F401 --exclude=__init__.py # Unused imports
 
 script:
