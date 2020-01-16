@@ -1,5 +1,5 @@
 import random
-from collections.abc import Sequence
+#from collections.abc import Sequence
 import math
 import itertools
 import bisect
