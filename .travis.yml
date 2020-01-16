@@ -41,10 +41,6 @@ before_script:
   - black . -l 120 --check # Check that code is formatted correctly w.r.t. black
   - flake8 sampling --select=F401 --exclude=__init__.py # Unused imports
 
-script:
-  # Install the test package before running the tests
-  - pytest . --verbose --doctest-modules --color=yes # Run all tests
-
 # -------------------- deploy: deploy to PyPI if it's a tagged commit ---------
 after_script:
   - python setup.py sdist # Source distribution
