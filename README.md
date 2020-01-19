@@ -20,21 +20,25 @@ random.seed(a = 2)
 
 data = list('abc')
 
-# 1.
+# 1. sampling without replacement, no weights
 x = tuple(Urn(population=data, replace=False, weights=None))
 print(x) # ('c', 'b', 'a')
 
-# 2.
+# 2. sampling with replacement, no weights
 y = tuple(itertools.islice(Urn(data, replace=True, weights=None), len(data)))   
 y2 = tuple(itertools.chain.from_iterable(y))
 print(y2) # ('a', 'c', 'c')
 
-# 3.
+# 3. sampling with replacement, with weights
 weights = (1, 2, 3)
 
 z = tuple(itertools.islice(Urn(data, replace=True, weights=weights), len(data)))   
 z2 = tuple(itertools.chain.from_iterable(z))
 print(z2) # ('c', 'b', 'c')
+
+# 4. sampling without replacement, with weights
+weights = (1, 2, 3)
+
 
 ```
 More examples are included below.
