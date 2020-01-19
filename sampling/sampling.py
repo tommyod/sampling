@@ -101,38 +101,3 @@ class Urn(Iterator, Sized):
                 self.population[self.num_remaining],
             )
             return self.population[self.num_remaining]
-
-
-if __name__ == "__main__":
-    """
-    tree = CumulativeSumTree([0.2, 0.3, 0.1, 0.4, 0.8])
-    print(tree.bst)
-    print(tree.right_sums)
-    print(tree.query(0.55))
-    print(tree.query(0.61))
-    for _ in range(100):
-        weight = random.random() * tree.get_sum()
-        i = tree.query(weight)
-        left_sum = sum(tree[j] for j in range(100) if j < i)
-        assert left_sum < weight
-        assert left_sum + tree[i] > weight
-    """
-
-    size = 8
-    weights = [i * 0.1 for i in range(size)]
-    indices = []
-
-    tree = CumulativeSumTree(weights)
-    for _ in range(size):
-        weight = random.random() * tree.get_sum()
-        i = tree.query(weight)
-        # print(i)
-        # print(tree.bst)
-        # print(tree.right_sums)
-        indices.append(i)
-        tree.update_weight(i, 0)
-
-    assert len(indices) == len(set(indices))
-    # print(tree.bst)
-    # print(tree.right_sums)
-    # print(tree.query(0.55))
