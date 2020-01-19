@@ -10,9 +10,9 @@ There are four ways to sample from a list of objects:
 For more information on the algorithms behind these sampling methods, see below. 
 
 ## Implementation
-We use an Urn object to represent the list of objects we want to sample from. 
+We use an Urn object to represent the list of objects we want to sample from. We first initiliaze our Urn object with the data we want to sample, and whether we want to sample with replacment or not and whether we have weights or not. We then have the option to print each sampled object in order or the whole list of sampled objects. See Example 1. See Example 2 for the implementation of all four methods.
 
-## Example
+## Example 1
 
 ```python
 from sampling import Urn
@@ -22,7 +22,27 @@ random.seed(a = 2)
 
 data = list('abc')
 
-# 1.
+# Initialize object
+urn = Urn(population=data, replace=False, weights=None)
+
+# Print first sampled object
+print(next(urn))
+
+# Print all sampled objects
+print(tuple(urn))
+```
+
+## Example 2 - all four sampling techniques
+
+```python
+from sampling import Urn
+import random
+
+random.seed(a = 2)
+
+data = list('abc')
+
+# 1. sampling without replacement, no weights
 urn = Urn(population=data, replace=False, weights=None)
 
 x = tuple(urn)
@@ -33,8 +53,7 @@ print(x) # ('c', 'b', 'a')
 urn = Urn(data, replace=True, weights=None)
 
 y = tuple(itertools.islice(urn, len(data)))   
-y2 = tuple(itertools.chain.from_iterable(y))
-print(y2) # ('a', 'c', 'c')
+print(y) # ('a', 'c', 'c')
 
 # 3. sampling with replacement, with weights
 weights = (1, 2, 3)
@@ -42,13 +61,10 @@ weights = (1, 2, 3)
 urn = Urn(data, replace=True, weights=weights)
 
 z = tuple(itertools.islice(urn, len(data)))
-z2 = tuple(itertools.chain.from_iterable(z))
-print(z2) # ('c', 'b', 'c')
+print(z) # ('c', 'b', 'c')
 
 # 4. sampling without replacement, with weights
 weights = (1, 2, 3)
-
-
 ```
 More examples are included below.
 
