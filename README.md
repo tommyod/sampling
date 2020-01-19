@@ -2,30 +2,35 @@
 
 An efficient pure Python implementation sampling with and without replacement, with and without weights. Works with Python 3.6+.
 
-There are four ways to sample from a list of objects. Sampling without replacement samples an object at random, notes the object, and then doesn't put the object back. Then samples another object. It is possible to sample as many objects as in the original list but not more. Sampling with replacement samples an object at random, notes the object, and then puts the object back. Then samples another. It is possible to sample an infinite number of objects since the object is always put back after it is sampled. Weights can be added to the objects as well. 
+There are four ways to sample from a list of objects. Sampling without replacement samples an object at random, notes the object, and then doesn't put the object back. Then samples another object. It is possible to sample as many objects as in the original list but not more. Sampling with replacement samples an object at random, notes the object, and then puts the object back. Then samples another. It is possible to sample an infinite number of objects since the object is always put back after it is sampled. Weights can be added to the objects as well. For more information on the algorithms behind these sampling methods, see below. 
 
-1. Sampling without replacement and without weights. This is done using the [Fisher-Yates shuffle] (https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle). The original method starts by writing out the list of objects (and their numerical equivalences) and chosing a number between 1 and the number of objects at random. After this number is chosen, the given object is crossed out. A new number is chosen, this time between 1 and the number of objects minus 1 (since one has just been crossed out). The new object is crossed out. This is continued until all objects are exhausted. 
-
-This method was adapted to be faster. First, a number is again chosen between 1 and the number of objects. This time, the chosen number and the last number are switched. A second number is chosen between 1 and the number of objects minus 1. Again, the chosen number is put at the end and the last number (that still hasn't been chosen) is switched. This is continued until all objects are exhausted. 
-
-2. Sampling with replacement and without weights. 
-
-3. Sampling with replacement and with weights.
-
-4. Sampling without replacement and with weights. 
 
 ## Example
 
-Here's a minimal working for each 1-4 above.
-
-
 ```python
-from efficient_apriori import apriori
-transactions = [('eggs', 'bacon', 'soup'),
-                ('eggs', 'bacon', 'apple'),
-                ('soup', 'bacon', 'banana')]
-itemsets, rules = apriori(transactions, min_support=0.5,  min_confidence=1)
-print(rules)  # [{eggs} -> {bacon}, {soup} -> {bacon}]
+from sampling import Urn
+import random
+
+random.seed(a = 2)
+
+data = list('abc')
+
+# 1.
+x = tuple(Urn(population=data, replace=False, weights=None))
+print(x) # ('c', 'b', 'a')
+
+# 2.
+y = tuple(itertools.islice(Urn(data, replace=True, weights=None), len(data)))   
+y2 = tuple(itertools.chain.from_iterable(y))
+print(y2) # ('a', 'c', 'c')
+
+# 3.
+weights = (1, 2, 3)
+
+z = tuple(itertools.islice(Urn(data, replace=True, weights=weights), len(data)))   
+z2 = tuple(itertools.chain.from_iterable(z))
+print(z2) # ('c', 'b', 'c')
+
 ```
 More examples are included below.
 
@@ -43,3 +48,16 @@ pip install sampling
 You are very welcome to scrutinize the code and make pull requests if you have suggestions and improvements.
 Your submitted code must be PEP8 compliant, and all tests must pass.
 Contributors: [CRJFisher](https://github.com/CRJFisher)
+
+
+## Sampling algorithms 
+
+1. Sampling without replacement and without weights. This is done using the [Fisher-Yates shuffle] (https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle). The original method starts by writing out the list of objects (and their numerical equivalences) and chosing a number between 1 and the number of objects at random. After this number is chosen, the given object is crossed out. A new number is chosen, this time between 1 and the number of objects minus 1 (since one has just been crossed out). The new object is crossed out. This is continued until all objects are exhausted. 
+
+This method was adapted to be faster. First, a number is again chosen between 1 and the number of objects. This time, the chosen number and the last number are switched. A second number is chosen between 1 and the number of objects minus 1. Again, the chosen number is put at the end and the last number (that still hasn't been chosen) is switched. This is continued until all objects are exhausted. 
+
+2. Sampling with replacement and without weights. 
+
+3. Sampling with replacement and with weights.
+
+4. Sampling without replacement and with weights. 
