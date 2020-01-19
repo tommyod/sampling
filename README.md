@@ -6,6 +6,7 @@ There are four ways to sample from a list of objects:
 * Sampling without replacement samples an object at random, notes the object, and then doesn't put the object back. Then samples another object. It is possible to sample as many objects as in the original list but not more. 
 * Sampling with replacement samples an object at random, notes the object, and then puts the object back. Then samples another. It is possible to sample an infinite number of objects since the object is always put back after it is sampled. * Sampling without replacement, with weights. Same as above but adds weights to the desired objects. 
 * Sampling with replacement with weights. Same as above but adds weights to the desired objects. 
+
 For more information on the algorithms behind these sampling methods, see below. 
 
 
