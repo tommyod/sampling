@@ -21,7 +21,7 @@ class Urn(Iterator, Sized):
             population : Sequence
                 An indexable, iterable (mutable) sequence of elements
             replace : bool
-                Whether or not the population is replaced (default False) 
+                Whether or not the population is replaced (default False)
             weights : Sequence
                 An indexable, iterable (mutable) sequence of weights corresponding to population (default None)
         """
@@ -50,7 +50,7 @@ class Urn(Iterator, Sized):
     def __bool__(self):
         return len(self) > 0
 
-    def __contains__(self):
+    def __contains__(self, value):
         raise NotImplementedError
 
     def __next__(self):
