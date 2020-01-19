@@ -1,8 +1,12 @@
 # sampling [![Build Status](https://travis-ci.com/tommyod/sampling.svg?branch=master)](https://travis-ci.com/tommyod/sampling) [![PyPI version](https://badge.fury.io/py/sampling.svg)](https://pypi.org/project/sampling/) [![Documentation Status](https://readthedocs.org/projects/sampling/badge/?version=latest)](https://sampling.readthedocs.io/en/latest/?badge=latest) [![Downloads](https://pepy.tech/badge/sampling)](https://pepy.tech/project/sampling) [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
-An efficient pure Python implementation sampling with and without replacement, with and without weights. Works with Python 3.6+.
+An efficient pure Python implementation of sampling with and without replacement, with and without weights. Works with Python 3.6+.
 
-There are four ways to sample from a list of objects. Sampling without replacement samples an object at random, notes the object, and then doesn't put the object back. Then samples another object. It is possible to sample as many objects as in the original list but not more. Sampling with replacement samples an object at random, notes the object, and then puts the object back. Then samples another. It is possible to sample an infinite number of objects since the object is always put back after it is sampled. Weights can be added to the objects as well. For more information on the algorithms behind these sampling methods, see below. 
+There are four ways to sample from a list of objects:
+* Sampling without replacement samples an object at random, notes the object, and then doesn't put the object back. Then samples another object. It is possible to sample as many objects as in the original list but not more. 
+* Sampling with replacement samples an object at random, notes the object, and then puts the object back. Then samples another. It is possible to sample an infinite number of objects since the object is always put back after it is sampled. * Sampling without replacement, with weights. Same as above but adds weights to the desired objects. 
+* Sampling with replacement with weights. Same as above but adds weights to the desired objects. 
+For more information on the algorithms behind these sampling methods, see below. 
 
 
 ## Example
