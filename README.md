@@ -49,22 +49,18 @@ x = tuple(urn)
 print(x) # ('c', 'b', 'a')
 
 # 2. sampling with replacement, no weights
-
 urn = Urn(data, replace=True, weights=None)
 
 y = tuple(itertools.islice(urn, len(data)))   
 print(y) # ('a', 'c', 'c')
 
 # 3. sampling with replacement, with weights
-weights = (1, 2, 3)
-
-urn = Urn(data, replace=True, weights=weights)
+urn = Urn(data, replace=True, weights=(1, 2, 3))
 
 z = tuple(itertools.islice(urn, len(data)))
 print(z) # ('c', 'b', 'c')
 
 # 4. sampling without replacement, with weights
-weights = (1, 2, 3)
 ```
 More examples are included below.
 
