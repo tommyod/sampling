@@ -1,19 +1,23 @@
-# Efficient-Apriori [![Build Status](https://travis-ci.com/tommyod/sampling.svg?branch=master)](https://travis-ci.com/tommyod/Efficient-Apriori) [![PyPI version](https://badge.fury.io/py/efficient-apriori.svg)](https://pypi.org/project/efficient-apriori/) [![Documentation Status](https://readthedocs.org/projects/efficient-apriori/badge/?version=latest)](https://efficient-apriori.readthedocs.io/en/latest/?badge=latest) [![Downloads](https://pepy.tech/badge/efficient-apriori)](https://pepy.tech/project/efficient-apriori) [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+# sampling [![Build Status](https://travis-ci.com/tommyod/sampling.svg?branch=master)](https://travis-ci.com/tommyod/sampling) [![PyPI version](https://badge.fury.io/py/sampling.svg)](https://pypi.org/project/sampling/) [![Documentation Status](https://readthedocs.org/projects/sampling/badge/?version=latest)](https://sampling.readthedocs.io/en/latest/?badge=latest) [![Downloads](https://pepy.tech/badge/sampling)](https://pepy.tech/project/sampling) [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
-An efficient pure Python implementation of the Apriori algorithm. Works with Python 3.6+.
+An efficient pure Python implementation sampling with and without replacement, with and without weights. Works with Python 3.6+.
 
-The apriori algorithm uncovers hidden structures in categorical data.
-The classical example is a database containing purchases from a supermarket.
-Every purchase has a number of items associated with it.
-We would like to uncover association rules such as `{bread, eggs} -> {bacon}` from the data.
-This is the goal of [association rule learning](https://en.wikipedia.org/wiki/Association_rule_learning), and the [Apriori algorithm](https://en.wikipedia.org/wiki/Apriori_algorithm) is arguably the most famous algorithm for this problem.
-This repository contains an efficient, well-tested implementation of the apriori algorithm as described in the [original paper](https://www.macs.hw.ac.uk/~dwcorne/Teaching/agrawal94fast.pdf) by Agrawal et al, published in 1994.
+There are four ways to sample from a list of objects. Sampling without replacement samples an object at random, notes the object, and then doesn't put the object back. Then samples another object. It is possible to sample as many objects as in the original list but not more. Sampling with replacement samples an object at random, notes the object, and then puts the object back. Then samples another. It is possible to sample an infinite number of objects since the object is always put back after it is sampled. Weights can be added to the objects as well. 
+
+1. Sampling without replacement and without weights. This is done using the [Fisher-Yates shuffle] (https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle). The original method starts by writing out the list of objects (and their numerical equivalences) and chosing a number between 1 and the number of objects at random. After this number is chosen, the given object is crossed out. A new number is chosen, this time between 1 and the number of objects minus 1 (since one has just been crossed out). The new object is crossed out. This is continued until all objects are exhausted. 
+
+This method was adapted to be faster. First, a number is again chosen between 1 and the number of objects. This time, the chosen number and the last number are switched. A second number is chosen between 1 and the number of objects minus 1. Again, the chosen number is put at the end and the last number (that still hasn't been chosen) is switched. This is continued until all objects are exhausted. 
+
+2. Sampling with replacement and without weights. 
+
+3. Sampling with replacement and with weights.
+
+4. Sampling without replacement and with weights. 
 
 ## Example
 
-Here's a minimal working example.
-Notice that in every transaction with `eggs` present, `bacon` is present too.
-Therefore, the rule `{eggs} -> {bacon}` is returned with 100 % confidence.
+Here's a minimal working for each 1-4 above.
+
 
 ```python
 from efficient_apriori import apriori
@@ -27,11 +31,11 @@ More examples are included below.
 
 ## Installation
 
-The software is available through GitHub, and through [PyPI](https://pypi.org/project/efficient-apriori/).
+The software is available through GitHub, and through [PyPI](https://pypi.org/project/sampling/).
 You may install the software using `pip`.
 
 ```bash
-pip install efficient-apriori
+pip install sampling
 ```
 
 ## Contributing
@@ -39,64 +43,3 @@ pip install efficient-apriori
 You are very welcome to scrutinize the code and make pull requests if you have suggestions and improvements.
 Your submitted code must be PEP8 compliant, and all tests must pass.
 Contributors: [CRJFisher](https://github.com/CRJFisher)
-
-## More examples
-
-### Filtering and sorting association rules
-
-It's possible to filter and sort the returned list of association rules.
-
-```python
-from efficient_apriori import apriori
-transactions = [('eggs', 'bacon', 'soup'),
-                ('eggs', 'bacon', 'apple'),
-                ('soup', 'bacon', 'banana')]
-itemsets, rules = apriori(transactions, min_support=0.2,  min_confidence=1)
-
-# Print out every rule with 2 items on the left hand side,
-# 1 item on the right hand side, sorted by lift
-rules_rhs = filter(lambda rule: len(rule.lhs) == 2 and len(rule.rhs) == 1, rules)
-for rule in sorted(rules_rhs, key=lambda rule: rule.lift):
-  print(rule) # Prints the rule and its confidence, support, lift, ...
-```
-
-### Working with large datasets
-
-If you have data that is too large to fit into memory, you may pass a function returning a generator instead of a list.
-The `min_support` will most likely have to be a large value, or the algorithm will take very long before it terminates.
-If you have massive amounts of data, this Python implementation is likely not fast enough, and you should consult more specialized implementations.
-
-```python
-def data_generator(filename):
-  """
-  Data generator, needs to return a generator to be called several times.
-  """
-  def data_gen():
-    with open(filename) as file:
-      for line in file:
-        yield tuple(k.strip() for k in line.split(','))      
-
-  return data_gen
-
-transactions = data_generator('dataset.csv')
-itemsets, rules = apriori(transactions, min_support=0.9, min_confidence=0.6)
-```
-
-### Transactions with IDs
-
-If you need to know which transactions occurred in the frequent itemsets,
-set the `output_transaction_ids` parameter to `True`.
-This changes the output to contain `ItemsetCount` objects for each itemset.
-The objects have `members` property containing is the set of ids of frequent transactions as well 
-as a `count` property. The ids are the enumeration of the transactions in the
-order they appear.    
-
-```python
-from efficient_apriori import apriori
-transactions = [('eggs', 'bacon', 'soup'),
-                ('eggs', 'bacon', 'apple'),
-                ('soup', 'bacon', 'banana')]
-itemsets, rules = apriori(transactions, output_transaction_ids=True)
-print(itemsets)
-# {1: {('bacon',): ItemsetCount(itemset_count=3, members={'0', '1', '2'}), ...
-```
