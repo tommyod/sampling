@@ -106,6 +106,34 @@ class Urn(Iterator, Sized):
 
 def sample(population, size, replace=False, weights=None):
     '''
+    sample takes a sample of the specified size from the elements of population 
+    using either with or without replacement, with or without weights.
+    
+    Parameters
+    ----------
+    population: list
+        The data points. 
+    
+    replace: bool
+        Sample with or without replacement?
+        
+    weights: list
+        One weight per data point. If None is
+        passed, uniform weights are used.
+        
+    Returns
+    -------
+    list
+    Returns a new list of length size containing elements from the population 
+    while leaving the original population unchanged.
+        
+        
+    Examples
+    --------
+    >>> data = [1, 3, 4, 7]
+    >>> weights = [3, 4, 2, 1]
+    >>> sample(population=data, replace=False, weights=weights)
+    >>> sample(population=data, replace=False, weights=None)
     
     '''
     
