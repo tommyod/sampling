@@ -9,6 +9,8 @@ There are four ways to sample from a list of objects:
 
 For more information on the algorithms behind these sampling methods, see below. 
 
+## Implementation
+We use an Urn object to represent the list of objects we want to sample from. 
 
 ## Example
 
@@ -20,19 +22,26 @@ random.seed(a = 2)
 
 data = list('abc')
 
-# 1. sampling without replacement, no weights
-x = tuple(Urn(population=data, replace=False, weights=None))
+# 1.
+urn = Urn(population=data, replace=False, weights=None)
+
+x = tuple(urn)
 print(x) # ('c', 'b', 'a')
 
 # 2. sampling with replacement, no weights
-y = tuple(itertools.islice(Urn(data, replace=True, weights=None), len(data)))   
+
+urn = Urn(data, replace=True, weights=None)
+
+y = tuple(itertools.islice(urn, len(data)))   
 y2 = tuple(itertools.chain.from_iterable(y))
 print(y2) # ('a', 'c', 'c')
 
 # 3. sampling with replacement, with weights
 weights = (1, 2, 3)
 
-z = tuple(itertools.islice(Urn(data, replace=True, weights=weights), len(data)))   
+urn = Urn(data, replace=True, weights=weights)
+
+z = tuple(itertools.islice(urn, len(data)))
 z2 = tuple(itertools.chain.from_iterable(z))
 print(z2) # ('c', 'b', 'c')
 
