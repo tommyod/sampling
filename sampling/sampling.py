@@ -103,6 +103,17 @@ class Urn(Iterator, Sized):
             return self.population[self.num_remaining]
 
 
+
+def sample(population, size, replace=False, weights=None):
+    '''
+    
+    '''
+    
+    urn = Urn(population=population, replace=replace, weights=weights)    
+    return list(itertools.islice(urn, size))
+
+
+
 if __name__ == "__main__":
     """
     tree = CumulativeSumTree([0.2, 0.3, 0.1, 0.4, 0.8])

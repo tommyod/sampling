@@ -1,2 +1,2 @@
 __version__ = "0.0.1"
-from sampling.sampling import Urn
+from sampling.sampling import Urn, sample
