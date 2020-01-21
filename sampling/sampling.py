@@ -103,9 +103,8 @@ class Urn(Iterator, Sized):
             return self.population[self.num_remaining]
 
 
-
 def sample(population, size, replace=False, weights=None):
-    '''
+    """
     sample takes a sample of the specified size from the elements of population 
     using either with or without replacement, with or without weights.
     
@@ -135,11 +134,10 @@ def sample(population, size, replace=False, weights=None):
     >>> sample(population=data, replace=False, weights=weights)
     >>> sample(population=data, replace=False, weights=None)
     
-    '''
-    
-    urn = Urn(population=population, replace=replace, weights=weights)    
-    return list(itertools.islice(urn, size))
+    """
 
+    urn = Urn(population=population, replace=replace, weights=weights)
+    return list(itertools.islice(urn, size))
 
 
 if __name__ == "__main__":
