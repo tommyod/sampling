@@ -112,12 +112,31 @@ class TestUrn:
         assert urn.size() == 8
 
     @pytest.mark.parametrize("replace", [True, False])
-    def test_list_extension_temp(self, replace):
+    def test_list_extension_stochastic(self, replace):
         """Test the extend method"""
         data = "abcdef"
         urn = Urn(data, replace=replace)
         urn.extend("xy")
         assert set(["x", "y"]).issubset(set(itertools.islice(urn, 1000)))
+
+    def test_contains_unweighted_infinite(self):
+        """Test the __contains__ method"""
+        data = "abcdef"
+        urn = Urn(data, replace=True)
+        # Draw one sample, then verify that everything is still in the urn
+        next(urn)
+        for element in data:
+            assert element in urn
+
+    def test_contains_unweighted_finite(self):
+        """Test the __contains__ method"""
+        data = "abcdef"
+        urn = Urn(data, replace=False)
+        # Draw one sample, then verify that element is not still in the urn
+        for element in urn:
+            assert element not in urn
+
+
 
 
 class TestSampleFunction:

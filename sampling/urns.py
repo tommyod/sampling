@@ -3,6 +3,7 @@ import math
 import itertools
 import bisect
 from sampling.tree import CumulativeSumTree
+import numbers
 
 from collections.abc import Iterator
 
@@ -38,6 +39,12 @@ class WeightedFiniteUrn(Iterator):
 
     def size(self):
         return self._num_remaining
+
+    def update_weight(self, index, value):
+        if not isinstance(index, numbers.Integral):
+            raise TypeError("'index' must be an integer")
+        assert value >= 0 #TODO: Proper type check
+        self._cumulative_sum_tree.update_weight(index, value)
 
 
 class WeightedInfiniteUrn(Iterator):
@@ -84,7 +91,7 @@ class UnweightedFiniteUrn(Iterator):
         return self.size() > 0
 
     def __contains__(self, value):
-        raise NotImplementedError
+        return value in self._population[:self._num_remaining]
 
     def __next__(self):
         if self._num_remaining == 0:
@@ -127,7 +134,7 @@ class UnweightedInfiniteUrn(Iterator):
         return len(self._population) > 0
 
     def __contains__(self, value):
-        raise NotImplementedError
+        return value in self._population
 
     def __next__(self):
         # Get a random index within the boundaries of our collection
