@@ -1,55 +1,9 @@
-# sampling [![Build Status](https://travis-ci.com/tommyod/sampling.svg?branch=master)](https://travis-ci.com/tommyod/sampling) [![PyPI version](https://badge.fury.io/py/sampling.svg)](https://pypi.org/project/sampling/) [![Documentation Status](https://readthedocs.org/projects/sampling/badge/?version=latest)](https://sampling.readthedocs.io/en/latest/?badge=latest) [![Downloads](https://pepy.tech/badge/sampling)](https://pepy.tech/project/sampling) [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+# sampling [![Build Status](https://travis-ci.com/tommyod/sampling.svg?branch=master)](https://travis-ci.com/tommyod/sampling) [![PyPI version](https://badge.fury.io/py/sampling.svg)](https://pypi.org/project/sampling/) [![Documentation Status](https://readthedocs.org/projects/sampling/badge/?version=latest)](https://sampling.readthedocs.io/en/latest/?badge=latest) [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
-An efficient pure Python implementation of sampling with and without replacement, with and without weights. Works with Python 3.6+.
+Sampling algorithms implemented in pure Python 3.6+.
 
-## Getting started
-We use an Urn object to represent the collection of objects we want to sample from. A wrapper method is available for simplification. See examples below.
-
-### Example 1 - Four sampling techniques with wrapper
-```python
-from sampling import sample
-data = ['a','b','b','c']
-weights = [1., 1.1, 1.5, 2.]
-samples_count = 3
-
-# No replacement, no weights
-example1 = sample(data, samples_count)
-
-# With replacement, no weights
-example2 = sample(data, samples_count, replace=True)
-
-# No replacement, with weights
-example3 = sample(data, samples_count, weights=weights)
-
-# With replacement, with weights
-example4 = sample(data, samples_count, replace=True, weights=weights)
-```
-
-### Example 2 - Four sampling techniques with the Urn object
-```python
-from sampling import Urn
-import itertools
-
-data = [1,2,3,4]
-weights = [1.1, 1.2, 1.3, 1.4]
-samples_cnt = 3
-
-# No replacement, no weights
-urn = Urn(population=data)
-example1 = list(itertools.islice(urn, samples_count))
-
-# With replacement, no weights
-urn = Urn(data, replace=True)
-example2 = list(itertools.islice(urn, samples_count))   
-
-# No replacement, with weights
-urn = Urn(data, weights=weights)
-example3 = list(itertools.islice(urn, samples_count))
-
-# With replacement, with weights
-urn = Urn(data, replace=True, weights=weights)
-example4 = list(itertools.islice(urn, samples_count))
-```
+- Unlike the standard library `random` module, weighted sampling without replacement is implemented here.
+- The `Urn` class provides a general interface for sampling which is more efficient than calling `sample` many times.
 
 ## Installation
 
@@ -60,8 +14,75 @@ You may install the software using `pip`.
 pip install sampling
 ```
 
+## Examples
+
+### Basic sampling
+
+```python
+from sampling import sample
+
+population = ['a', 'b', 'b', 'c']
+weights = [7, 1, 2, 4]
+
+# No replacement, no weights
+samples = sample(population, size=2)
+
+# With replacement and with weights
+samples = sample(population, size=2, replace=True, weights=weights)
+```
+
+### Basic usage of the urn object
+
+```python
+from sampling import Urn
+import itertools
+
+population = ['a', 'b', 'b', 'c', 'd', 'e']
+weights = [7, 1, 2, 4, 3, 1]
+
+# Create an urn and draw a single sample
+urn = Urn(population, weights=weights)
+sample = next(urn)
+
+# Draw 2 more samples
+samples = list(itertools.islice(urn, 2))
+
+# Draw the remaining samples
+remaining_samples = list(urn)
+```
+
+### Advanced usage of the urn object
+
+```python
+from sampling import Urn
+
+population = ['a', 'b', 'b', 'c', 'd', 'e']
+weights = [7, 1, 2, 4, 3, 1]
+
+# Create an urn and draw a single sample
+urn = Urn(population, replace=True, weights=weights)
+
+# Enter an infinite loop of sampling with replacement
+for element in urn:
+    # Perform logic here
+    if element == "a":
+        break
+```
+
+
+## Speed and comparison
+
+- For many common use cases, the NumPy `np.random.choice` function is faster than this pure Python implementation.
+
+
 ## Contributing
 
 You are very welcome to scrutinize the code and make pull requests if you have suggestions and improvements.
 Your submitted code must be PEP8 compliant, and all tests must pass.
-Contributors: [aredelmeier](https://github.com/aredelmeier), [mojohn89](https://github.com/mojohn89), [JensWahl](https://github.com/JensWahl)
+
+### Contributors
+
+- [aredelmeier](https://github.com/aredelmeier)
+- [JensWahl](https://github.com/JensWahl)
+- [mojohn89](https://github.com/mojohn89)
+- [tommyod](https://github.com/tommyod)
