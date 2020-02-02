@@ -2,69 +2,54 @@
 
 An efficient pure Python implementation of sampling with and without replacement, with and without weights. Works with Python 3.6+.
 
-There are four ways to sample from a list of objects:
-* Sampling without replacement samples an object at random, notes the object, and then doesn't put the object back. Then samples another object. It is possible to sample as many objects as in the original list but not more. 
-* Sampling with replacement samples an object at random, notes the object, and then puts the object back. Then samples another. It is possible to sample an infinite number of objects since the object is always put back after it is sampled. 
-* Sampling with replacement with weights. Same as above but adds weights to the desired objects. 
-* Sampling without replacement, with weights. Same as above but adds weights to the desired objects. 
-
-
-For more information on the algorithms behind these sampling methods, see below. 
-
-## Implementation
+## Getting started
 We use an Urn object to represent the list of objects we want to sample from. We first initiliaze our Urn object with the data we want to sample, and whether we want to sample with replacment or not and whether we have weights or not. We then have the option to print each sampled object in order or the whole list of sampled objects. See Example 1. See Example 2 for the implementation of all four methods.
 
-## Example 1
-
+### Example 1 - Initialization and usage
 ```python
 from sampling import Urn
-import random
+import itertools
 
-random.seed(a = 2)
+data = [1,2,3,4]
 
-data = list('abc')
+# Without replacement
+urn = Urn(data, replace=False, weights=None)
+# Draw all possible samples to a list
+list_of_remaining_samples = list(urn)
 
-# Initialize object
-urn = Urn(population=data, replace=False, weights=None)
+# With replacement
+urn = Urn(data, replace=True, weights=None)
+# Draw next item
+single_sample = next(urn)
+# Draw 5 items
+list_of_samples = list(itertools.islice(urn, 5))
+``` 
 
-# Print first sampled object
-print(next(urn))
-
-# Print all sampled objects
-print(tuple(urn))
-```
-
-## Example 2 - all four sampling techniques
-
+### Example 2 - Four sampling techniques
 ```python
 from sampling import Urn
-import random
-
-random.seed(a = 2)
-
-data = list('abc')
+data = [1,2,3,4]
 
 # 1. sampling without replacement, no weights
 urn = Urn(population=data, replace=False, weights=None)
-
-x = tuple(urn)
-print(x) # ('c', 'b', 'a')
+example1 = tuple(urn)
+print(example1)
 
 # 2. sampling with replacement, no weights
 urn = Urn(data, replace=True, weights=None)
-
-y = tuple(itertools.islice(urn, len(data)))   
-print(y) # ('a', 'c', 'c')
+example2 = tuple(itertools.islice(urn, len(data)))   
+print(example2)
 
 # 3. sampling with replacement, with weights
-urn = Urn(data, replace=True, weights=(1, 2, 3))
-
-z = tuple(itertools.islice(urn, len(data)))
-print(z) # ('c', 'b', 'c')
+urn = Urn(data, replace=True, weights=(1, 1, 2, 2))
+example3 = tuple(itertools.islice(urn, len(data)))
+print(example3)
 
 # 4. sampling without replacement, with weights
+urn = Urn(data, replace=False, weights=(1, 1, 2, 2))
+example4 = tuple(itertools.islice(urn, len(data)))
+print(example4)
 ```
-More examples are included below.
 
 ## Installation
 
@@ -79,17 +64,4 @@ pip install sampling
 
 You are very welcome to scrutinize the code and make pull requests if you have suggestions and improvements.
 Your submitted code must be PEP8 compliant, and all tests must pass.
-Contributors: [CRJFisher](https://github.com/CRJFisher)
-
-
-## Sampling algorithms 
-
-1. Sampling without replacement and without weights. This is done using the [Fisher-Yates shuffle] (https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle). The original method starts by writing out the list of objects (and their numerical equivalences) and chosing a number between 1 and the number of objects at random. After this number is chosen, the given object is crossed out. A new number is chosen, this time between 1 and the number of objects minus 1 (since one has just been crossed out). The new object is crossed out. This is continued until all objects are exhausted. 
-
-This method was adapted to be faster. First, a number is again chosen between 1 and the number of objects. This time, the chosen number and the last number are switched. A second number is chosen between 1 and the number of objects minus 1. Again, the chosen number is put at the end and the last number (that still hasn't been chosen) is switched. This is continued until all objects are exhausted. 
-
-2. Sampling with replacement and without weights. 
-
-3. Sampling with replacement and with weights.
-
-4. Sampling without replacement and with weights. 
+Contributors: [aredelmeier](https://github.com/aredelmeier) [mojohn89](https://github.com/mojohn89) [JensWahl](https://github.com/JensWahl)
