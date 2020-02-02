@@ -60,6 +60,14 @@ def test_urn_length_with_replacement(weights):
     assert urn.size() == float("inf")
 
 
+@pytest.mark.parametrize("type_func, replace", list(itertools.product((list, set, tuple, str), (True, False))))
+def test_input_types_unweighted(type_func, replace):
+    """Test that common Python types work."""
+    data = type_func("abcdef")
+    urn = Urn(data, replace=replace, weights=None)
+    next(urn)
+
+
 @pytest.mark.parametrize("weights", [None, [1, 2, 3]])
 def test_usage(weights):
     """Test that usage functionality of the urn is equivalent:
