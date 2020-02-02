@@ -3,6 +3,9 @@ import math
 
 class CumulativeSumTree:
     def __init__(self, weights):
+        assert isinstance(weights, list)
+        assert all(w >= 0 for w in weights)
+
         self.leaf_nodes = int(2 ** math.ceil(math.log(len(weights), 2)))
         self.bst = [0] * self.leaf_nodes
         self.bst.extend(weights)
