@@ -15,6 +15,32 @@ def test_input_equals_output(weights):
 
 
 @pytest.mark.parametrize("weights", [None, [1, 2, 3]])
+def test_urn_length_without_replacement(weights):
+    """Test that len(urn) works as expected.
+    """
+    data = [1, 2, 3]
+    urn = Urn(data, replace=False, weights=weights)
+    assert len(urn) == 3
+    next(urn)
+    assert len(urn) == 2
+    list(urn)  # Exhaust the iterator
+    assert len(urn) == 0
+
+
+@pytest.mark.parametrize("weights", [None, [1, 2, 3]])
+def test_urn_length_with_replacement(weights):
+    """Test that len(urn) works as expected.
+    """
+    data = [1, 2, 3]
+    urn = Urn(data, replace=True, weights=weights)
+    assert len(urn) == float("inf")
+
+    # Drawing a sample does not change the length
+    next(urn)
+    assert len(urn) == float("inf")
+
+
+@pytest.mark.parametrize("weights", [None, [1, 2, 3]])
 def test_usage(weights):
     """Test that usage functionality of the urn is equivalent:
      - Cast to list directly
@@ -26,9 +52,7 @@ def test_usage(weights):
 
     random.seed(seed)
     urn = Urn(data, replace=False, weights=weights)
-    assert len(urn) == 3
     samples1 = list(urn)
-    assert len(urn) == 0
 
     random.seed(seed)
     urn = Urn(data, replace=False, weights=weights)
