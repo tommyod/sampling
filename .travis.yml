@@ -3,27 +3,11 @@ language: python
 notifications:
   email: false
 
-matrix:
-  include:
-  
-    - os: linux
-      sudo: required
-      python: '3.6'
-  
-    - os: linux
-      dist: xenial    # required for Python 3.7 (travis-ci/travis-ci#9069)
-      sudo: required
-      python: '3.7'
-
-# =============================================================================
-#     - os: linux
-#       dist: xenial    
-#       sudo: required
-#       python: '3.8-dev'
-# =============================================================================
-
-# The Travis CI job lifecycle specifies the order of the commands below phases.
-# https://docs.travis-ci.com/user/job-lifecycle/#the-job-lifecycle
+language: python
+python:
+  - "3.6"
+  - "3.7"
+  - "3.8"
 
 # -------------------- install: install any dependencies required -------------
 before_install:
