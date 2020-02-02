@@ -25,39 +25,39 @@ def test_urn_bool(weights):
     assert bool(urn)
     while urn:
         next(urn)
-    assert len(urn) == 0
+    assert urn.size() == 0
     assert not urn
     assert not bool(urn)
 
 
 @pytest.mark.parametrize("weights", [None, [1, 2, 3]])
 def test_urn_length_without_replacement(weights):
-    """Test that len(urn) works as expected.
+    """Test that urn.size() works as expected.
     """
     data = [1, 2, 3]
     urn = Urn(data, replace=False, weights=weights)
-    assert len(urn) == 3
+    assert urn.size() == 3
     next(urn)
-    assert len(urn) == 2
+    assert urn.size() == 2
     list(urn)  # Exhaust the iterator
-    assert len(urn) == 0
+    assert urn.size() == 0
 
 
 @pytest.mark.parametrize("weights", [None, [1, 2, 3]])
 def test_urn_length_with_replacement(weights):
-    """Test that len(urn) works as expected.
+    """Test that urn.size() works as expected.
     """
     data = [1, 2, 3]
     urn = Urn(data, replace=True, weights=weights)
-    assert len(urn) == float("inf")
+    assert urn.size() == float("inf")
 
     # Drawing a sample does not change the length
     next(urn)
-    assert len(urn) == float("inf")
+    assert urn.size() == float("inf")
 
     # Drawing 50 samples does not change the length
     list(itertools.islice(urn, 50))
-    assert len(urn) == float("inf")
+    assert urn.size() == float("inf")
 
 
 @pytest.mark.parametrize("weights", [None, [1, 2, 3]])

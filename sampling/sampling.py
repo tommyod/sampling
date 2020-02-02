@@ -4,10 +4,10 @@ import itertools
 import bisect
 from sampling.tree import CumulativeSumTree
 
-from collections.abc import Iterator, Sized
+from collections.abc import Iterator
 
 
-class Urn(Iterator, Sized):
+class Urn(Iterator):
     def __init__(self, population, replace=False, weights=None):
         """Initialize Urn.
 
@@ -28,7 +28,8 @@ class Urn(Iterator, Sized):
         # Store urn parameters
         self.replace = replace
         self._weights = weights
-        self._num_remaining = len(self._population)
+
+        self._num_remaining = float("inf") if self.replace else len(self._population)
 
         if not self.replace and self._weights:
             self.cumulative_sum_tree = CumulativeSumTree(self._weights)
@@ -36,11 +37,11 @@ class Urn(Iterator, Sized):
     def __iter__(self):
         return self
 
-    def __len__(self):
-        return float("inf") if self.replace else self._num_remaining
+    def size(self):
+        return self._num_remaining
 
     def __bool__(self):
-        return len(self) > 0
+        return self.size() > 0
 
     def __contains__(self, value):
         raise NotImplementedError
