@@ -44,7 +44,7 @@ class WeightedFiniteUrn(Iterator):
     def update_weight(self, index, value):
         if not isinstance(index, numbers.Integral):
             raise TypeError("'index' must be an integer")
-        assert value >= 0 #TODO: Proper type check
+        assert value >= 0  # TODO: Proper type check
         self._cumulative_sum_tree.update_weight(index, value)
 
 
@@ -64,7 +64,7 @@ class WeightedInfiniteUrn(Iterator):
         return len(self._population) > 0
 
     def __contains__(self, value):
-        # TODO: Implement this 
+        # TODO: Implement this
         raise NotImplementedError
 
     def __next__(self):
@@ -82,7 +82,6 @@ class WeightedInfiniteUrn(Iterator):
         raise NotImplementedError
 
 
-
 class UnweightedFiniteUrn(Iterator):
     def __init__(self, population):
         self._population = list(population)
@@ -98,7 +97,7 @@ class UnweightedFiniteUrn(Iterator):
         return self.size() > 0
 
     def __contains__(self, value):
-        return value in self._population[:self._num_remaining]
+        return value in self._population[: self._num_remaining]
 
     def __next__(self):
         if self._num_remaining == 0:

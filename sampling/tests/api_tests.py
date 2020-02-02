@@ -137,8 +137,6 @@ class TestUrn:
             assert element not in urn
 
 
-
-
 class TestSampleFunction:
     @pytest.mark.parametrize("k", [1, 5, 25])
     def test_api(self, k):
