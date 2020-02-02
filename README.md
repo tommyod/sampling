@@ -1,10 +1,18 @@
-# sampling [![Build Status](https://travis-ci.com/tommyod/sampling.svg?branch=master)](https://travis-ci.com/tommyod/sampling) [![PyPI version](https://badge.fury.io/py/sampling.svg)](https://pypi.org/project/sampling/) [![Documentation Status](https://readthedocs.org/projects/sampling/badge/?version=latest)](https://sampling.readthedocs.io/en/latest/?badge=latest) [![Downloads](https://pepy.tech/badge/sampling)](https://pepy.tech/project/sampling) [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+# sampling [![Build Status](https://travis-ci.com/tommyod/sampling.svg?branch=master)](https://travis-ci.com/tommyod/sampling) [![PyPI version](https://badge.fury.io/py/sampling.svg)](https://pypi.org/project/sampling/) [![Documentation Status](https://readthedocs.org/projects/sampling/badge/?version=latest)](https://sampling.readthedocs.io/en/latest/?badge=latest) [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
 Sampling algorithms implemented in pure Python 3.6+.
 
 - Unlike the standard library `random` module, weighted sampling without replacement is implemented here.
 - The `Urn` class provides a general interface for sampling which is more efficient than calling `sample` many times.
-- For many common use cases, the NumPy `np.random.choice` function is faster than this pure Python implementation.
+
+## Installation
+
+The software is available through GitHub, and through [PyPI](https://pypi.org/project/sampling/).
+You may install the software using `pip`.
+
+```bash
+pip install sampling
+```
 
 ## Examples
 
@@ -61,14 +69,11 @@ for element in urn:
         break
 ```
 
-## Installation
 
-The software is available through GitHub, and through [PyPI](https://pypi.org/project/sampling/).
-You may install the software using `pip`.
+## Speed and comparison
 
-```bash
-pip install sampling
-```
+- For many common use cases, the NumPy `np.random.choice` function is faster than this pure Python implementation.
+
 
 ## Contributing
 
