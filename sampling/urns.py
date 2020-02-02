@@ -102,7 +102,7 @@ class UnweightedFiniteUrn(Iterator):
         return self._population[self._num_remaining]
 
     def size(self):
-        raise self._num_remaining
+        return self._num_remaining
 
 
 class UnweightedInfiniteUrn(Iterator):
