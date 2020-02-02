@@ -27,7 +27,7 @@ class Urn(Iterator):
 
         # Store urn parameters
         self.replace = replace
-        self._weights = list(weights)  # TODO: Refine data type
+        self._weights = list(weights) if weights else None  # TODO: Refine data type
 
         self._num_remaining = float("inf") if self.replace else len(self._population)
 

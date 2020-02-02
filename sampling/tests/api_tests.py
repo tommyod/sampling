@@ -68,7 +68,7 @@ def test_input_types_unweighted(type_func, replace):
     next(urn)
 
 
-@pytest.mark.parametrize("type_func, replace", list(itertools.product((list, tuple, str), (True, False))))
+@pytest.mark.parametrize("type_func, replace", list(itertools.product((list, tuple), (True, False))))
 def test_input_types_weighted(type_func, replace):
     """Test that common Python types work."""
     data = type_func("abcdef")
