@@ -1,4 +1,4 @@
-from sampling import Urn
+from sampling import Urn, sample
 import itertools
 import random
 import pytest
@@ -102,3 +102,17 @@ class TestUrn:
 
         assert samples1 == samples3
         assert samples2 == samples3
+
+
+class TestSampleFunction:
+    @pytest.mark.parametrize("k", [1, 5, 25])
+    def test_api(self, k):
+        """Test basic API for sample function."""
+
+        data = list(range(100))
+        data_in = data.copy()
+        sampled_elements = sample(data)
+        assert data == data_in  # Function does not change the data
+        assert isinstance(sampled_elements, list)
+        assert len(sampled_elements) == 1
+        assert set(sampled_elements).issubset(set(data))
