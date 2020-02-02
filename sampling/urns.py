@@ -25,6 +25,7 @@ class WeightedFiniteUrn(Iterator):
         return self.size() > 0
 
     def __contains__(self, value):
+        # TODO: Implement
         raise NotImplementedError
 
     def __next__(self):
@@ -63,6 +64,7 @@ class WeightedInfiniteUrn(Iterator):
         return len(self._population) > 0
 
     def __contains__(self, value):
+        # TODO: Implement this 
         raise NotImplementedError
 
     def __next__(self):
@@ -74,6 +76,11 @@ class WeightedInfiniteUrn(Iterator):
 
     def size(self):
         return float("inf")
+
+    def update_weight(self, index, value):
+        """ TODO: Implement """
+        raise NotImplementedError
+
 
 
 class UnweightedFiniteUrn(Iterator):
@@ -171,4 +178,5 @@ def Urn(population, replace=False, weights=None):
     elif not replace and weights is None:
         return UnweightedFiniteUrn(population)
     else:
+        # TODO: Raise proper exception
         raise Exception
