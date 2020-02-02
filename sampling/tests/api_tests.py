@@ -51,11 +51,11 @@ def test_urn_length_with_replacement(weights):
     urn = Urn(data, replace=True, weights=weights)
     assert urn.size() == float("inf")
 
-    # Drawing a sample does not change the length
+    # Drawing a sample does not change the size
     next(urn)
     assert urn.size() == float("inf")
 
-    # Drawing 50 samples does not change the length
+    # Drawing 50 samples does not change the size
     list(itertools.islice(urn, 50))
     assert urn.size() == float("inf")
 
@@ -65,6 +65,15 @@ def test_input_types_unweighted(type_func, replace):
     """Test that common Python types work."""
     data = type_func("abcdef")
     urn = Urn(data, replace=replace, weights=None)
+    next(urn)
+
+
+@pytest.mark.parametrize("type_func, replace", list(itertools.product((list, tuple, str), (True, False))))
+def test_input_types_weighted(type_func, replace):
+    """Test that common Python types work."""
+    data = type_func("abcdef")
+    weights = type_func(i + 1 for i in range(len(data)))
+    urn = Urn(data, replace=replace, weights=weights)
     next(urn)
 
 
