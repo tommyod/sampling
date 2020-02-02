@@ -3,7 +3,7 @@
 An efficient pure Python implementation of sampling with and without replacement, with and without weights. Works with Python 3.6+.
 
 ## Getting started
-We use an Urn object to represent the list of objects we want to sample from. We first initiliaze our Urn object with the data we want to sample, and whether we want to sample with replacment or not and whether we have weights or not. We then have the option to print each sampled object in order or the whole list of sampled objects. See Example 1. See Example 2 for the implementation of all four methods.
+We use an Urn object to represent the collection of objects we want to sample from. See examples below.
 
 ### Example 1 - Initialization and usage
 ```python
@@ -14,15 +14,12 @@ data = [1,2,3,4]
 
 # Without replacement
 urn = Urn(data, replace=False, weights=None)
-# Draw all possible samples to a list
 list_of_remaining_samples = list(urn)
 
 # With replacement
 urn = Urn(data, replace=True, weights=None)
-# Draw next item
 single_sample = next(urn)
-# Draw 5 items
-list_of_samples = list(itertools.islice(urn, 5))
+list_of_5_samples = list(itertools.islice(urn, 5))
 ``` 
 
 ### Example 2 - Four sampling techniques
@@ -64,4 +61,4 @@ pip install sampling
 
 You are very welcome to scrutinize the code and make pull requests if you have suggestions and improvements.
 Your submitted code must be PEP8 compliant, and all tests must pass.
-Contributors: [aredelmeier](https://github.com/aredelmeier) [mojohn89](https://github.com/mojohn89) [JensWahl](https://github.com/JensWahl)
+Contributors: [aredelmeier](https://github.com/aredelmeier), [mojohn89](https://github.com/mojohn89), [JensWahl](https://github.com/JensWahl)
