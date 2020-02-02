@@ -26,7 +26,9 @@ def test_usage(weights):
 
     random.seed(seed)
     urn = Urn(data, replace=False, weights=weights)
+    assert len(urn) == 3
     samples1 = list(urn)
+    assert len(urn) == 0
 
     random.seed(seed)
     urn = Urn(data, replace=False, weights=weights)
