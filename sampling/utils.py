@@ -33,6 +33,8 @@ def sample(population, size=1, replace=False, weights=None):
     >>> sample(data, replace=False, weights=None)
     
     """
+    # TODO: Special case when built-in-range is passed
+    # TODO: Special case when datastream is passed
     urn = Urn(population=population, replace=replace, weights=weights)
     return list(itertools.islice(urn, size))
 
