@@ -107,7 +107,7 @@ class UnweightedFiniteUrn(Iterator):
     def extend(self, population):
         population = list(population)
         extra_length = len(population)
-        population.extend(self.population)
+        population.extend(self._population)
         self._population = population
         self._num_remaining += extra_length
 
