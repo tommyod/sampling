@@ -29,7 +29,7 @@ class Urn(Iterator, Sized):
         # Store urn parameters
         self.replace = replace
         self._weights = weights
-        self.num_remaining = len(self._population)
+        self._num_remaining = len(self._population)
 
         if not self.replace and self._weights:
             self.cumulative_sum_tree = CumulativeSumTree(self._weights)
@@ -38,10 +38,7 @@ class Urn(Iterator, Sized):
         return self
 
     def __len__(self):
-        if self.replace:
-            return float("inf")
-        else:
-            return self.num_remaining
+        return float("inf") if self.replace else self._num_remaining
 
     def __bool__(self):
         return len(self) > 0
@@ -69,9 +66,9 @@ class Urn(Iterator, Sized):
             return self._population[index_choice]
 
         elif not self.replace and self._weights:
-            if self.num_remaining == 0:
+            if self._num_remaining == 0:
                 raise StopIteration
-            self.num_remaining -= 1
+            self._num_remaining -= 1
 
             pick = random.random() * self.cumulative_sum_tree.get_sum()
             index = self.cumulative_sum_tree.query(pick)
@@ -84,19 +81,19 @@ class Urn(Iterator, Sized):
         # This is the implementation of the modern method (Richard Durstenfeld, 1964)
         elif not self.replace and not self._weights:
 
-            if self.num_remaining == 0:
+            if self._num_remaining == 0:
                 raise StopIteration
-            self.num_remaining -= 1
+            self._num_remaining -= 1
 
             # generate a random number in [0, num_remaining]
-            pick = math.floor(random.random() * (self.num_remaining + 1))
+            pick = math.floor(random.random() * (self._num_remaining + 1))
 
             # Move our pick to the last index within current range, return it
-            self._population[self.num_remaining], self._population[pick] = (
+            self._population[self._num_remaining], self._population[pick] = (
                 self._population[pick],
-                self._population[self.num_remaining],
+                self._population[self._num_remaining],
             )
-            return self._population[self.num_remaining]
+            return self._population[self._num_remaining]
 
 
 def sample(population, size, replace=False, weights=None):
