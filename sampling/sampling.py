@@ -8,7 +8,6 @@ from collections.abc import Iterator, Sized
 
 
 class Urn(Iterator, Sized):
-
     def __init__(self, population, replace=False, weights=None):
         """Initialize Urn.
 
