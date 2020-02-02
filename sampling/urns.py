@@ -87,9 +87,19 @@ class UnweightedFiniteUrn(Iterator):
         raise NotImplementedError
 
     def __next__(self):
-        # Get a random index within the boundaries of our collection
-        index_choice = math.floor(random.random() * len(self._population))
-        return self._population[index_choice]
+        if self._num_remaining == 0:
+            raise StopIteration
+        self._num_remaining -= 1
+
+        # generate a random number in [0, num_remaining]
+        pick = math.floor(random.random() * (self._num_remaining + 1))
+
+        # Move our pick to the last index within current range, return it
+        self._population[self._num_remaining], self._population[pick] = (
+            self._population[pick],
+            self._population[self._num_remaining],
+        )
+        return self._population[self._num_remaining]
 
     def size(self):
         raise self._num_remaining
@@ -113,19 +123,10 @@ class UnweightedInfiniteUrn(Iterator):
         raise NotImplementedError
 
     def __next__(self):
-        if self._num_remaining == 0:
-            raise StopIteration
-        self._num_remaining -= 1
-
-        # generate a random number in [0, num_remaining]
-        pick = math.floor(random.random() * (self._num_remaining + 1))
-
-        # Move our pick to the last index within current range, return it
-        self._population[self._num_remaining], self._population[pick] = (
-            self._population[pick],
-            self._population[self._num_remaining],
-        )
-        return self._population[self._num_remaining]
+        # Get a random index within the boundaries of our collection
+        index_choice = math.floor(random.random() * len(self._population))
+        return self._population[index_choice]
+        
 
     def size(self):
         return float("inf")
