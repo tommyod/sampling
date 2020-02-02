@@ -1,4 +1,5 @@
 from sampling import Urn
+import itertools
 import random
 import pytest
 
@@ -12,6 +13,21 @@ def test_input_equals_output(weights):
     data = [1, 2, 3]
     urn = Urn(data, replace=False, weights=weights)
     assert set(urn) == set(data)
+
+
+@pytest.mark.parametrize("weights", [None, [1, 2, 3]])
+def test_urn_bool(weights):
+    """Test that bool(urn) works as expected.
+    """
+    data = [1, 2, 3]
+    urn = Urn(data, replace=False, weights=weights)
+    assert urn
+    assert bool(urn)
+    while urn:
+        next(urn)
+    assert len(urn) == 0
+    assert not urn
+    assert not bool(urn)
 
 
 @pytest.mark.parametrize("weights", [None, [1, 2, 3]])
@@ -37,6 +53,10 @@ def test_urn_length_with_replacement(weights):
 
     # Drawing a sample does not change the length
     next(urn)
+    assert len(urn) == float("inf")
+
+    # Drawing 50 samples does not change the length
+    list(itertools.islice(urn, 50))
     assert len(urn) == float("inf")
 
 
