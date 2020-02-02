@@ -1,6 +1,4 @@
 import random
-
-# from collections.abc import Sequence
 import math
 import itertools
 import bisect
@@ -10,7 +8,6 @@ from collections.abc import Iterator, Sized
 
 
 class Urn(Iterator, Sized):
-    """A base class for an Urn. """
 
     def __init__(self, population, replace=False, weights=None):
         """Initialize Urn.
@@ -27,18 +24,17 @@ class Urn(Iterator, Sized):
         """
 
         # TODO: Refine data type
-        self.population = list(population)
+        self._population = list(population)
 
         # Store urn parameters
         self.replace = replace
-        self.weights = weights
-        self.num_remaining = len(self.population)
+        self._weights = weights
+        self.num_remaining = len(self._population)
 
-        if not self.replace and self.weights:
-            self.cumulative_sum_tree = CumulativeSumTree(self.weights)
+        if not self.replace and self._weights:
+            self.cumulative_sum_tree = CumulativeSumTree(self._weights)
 
     def __iter__(self):
-        """Initialize iter."""
         return self
 
     def __len__(self):
@@ -57,22 +53,22 @@ class Urn(Iterator, Sized):
         """Return next element in population based on urn parameters."""
 
         # Get next element in a collection of weighted elements
-        if self.replace and self.weights:
+        if self.replace and self._weights:
             # Accumulate the weights for the population
-            weights = list(itertools.accumulate(self.weights))
+            weights = list(itertools.accumulate(self._weights))
             # Get a random weight within the weight distribution
             choice = weights[-1] * random.random()
             # Find the index the random weight corresponds to
             index = bisect.bisect_left(weights, choice)
-            return self.population[index]
+            return self._population[index]
 
         # Get next element in a collection of unweighted elements
-        elif self.replace and not self.weights:
+        elif self.replace and not self._weights:
             # Get a random index within the boundaries of our collection
-            index_choice = math.floor(random.random() * len(self.population))
-            return self.population[index_choice]
+            index_choice = math.floor(random.random() * len(self._population))
+            return self._population[index_choice]
 
-        elif not self.replace and self.weights:
+        elif not self.replace and self._weights:
             if self.num_remaining == 0:
                 raise StopIteration
             self.num_remaining -= 1
@@ -80,13 +76,13 @@ class Urn(Iterator, Sized):
             pick = random.random() * self.cumulative_sum_tree.get_sum()
             index = self.cumulative_sum_tree.query(pick)
             self.cumulative_sum_tree.update_weight(index, 0)
-            return self.population[index]
+            return self._population[index]
 
         # Get next element in a collection of unweighted elements without replace
         # We implement the Fisher-Yates shuffle (1938)
         # See https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
         # This is the implementation of the modern method (Richard Durstenfeld, 1964)
-        elif not self.replace and not self.weights:
+        elif not self.replace and not self._weights:
 
             if self.num_remaining == 0:
                 raise StopIteration
@@ -96,11 +92,11 @@ class Urn(Iterator, Sized):
             pick = math.floor(random.random() * (self.num_remaining + 1))
 
             # Move our pick to the last index within current range, return it
-            self.population[self.num_remaining], self.population[pick] = (
-                self.population[pick],
-                self.population[self.num_remaining],
+            self._population[self.num_remaining], self._population[pick] = (
+                self._population[pick],
+                self._population[self.num_remaining],
             )
-            return self.population[self.num_remaining]
+            return self._population[self.num_remaining]
 
 
 def sample(population, size, replace=False, weights=None):
