@@ -1,17 +1,13 @@
 import random
-
-# from collections.abc import Sequence
 import math
 import itertools
 import bisect
 from sampling.tree import CumulativeSumTree
 
-from collections.abc import Iterator, Sized
+from collections.abc import Iterator
 
 
-class Urn(Iterator, Sized):
-    """A base class for an Urn. """
-
+class Urn(Iterator):
     def __init__(self, population, replace=False, weights=None):
         """Initialize Urn.
 
@@ -27,28 +23,25 @@ class Urn(Iterator, Sized):
         """
 
         # TODO: Refine data type
-        self.population = list(population)
+        self._population = list(population)
 
         # Store urn parameters
         self.replace = replace
-        self.weights = weights
-        self.num_remaining = len(self.population)
+        self._weights = list(weights) if weights else None  # TODO: Refine data type
 
-        if not self.replace and self.weights:
-            self.cumulative_sum_tree = CumulativeSumTree(self.weights)
+        self._num_remaining = float("inf") if self.replace else len(self._population)
+
+        if not self.replace and self._weights:
+            self.cumulative_sum_tree = CumulativeSumTree(self._weights)
 
     def __iter__(self):
-        """Initialize iter."""
         return self
 
-    def __len__(self):
-        if self.replace:
-            return float("inf")
-        else:
-            return self.num_remaining
+    def size(self):
+        return self._num_remaining
 
     def __bool__(self):
-        return len(self) > 0
+        return self.size() > 0
 
     def __contains__(self, value):
         raise NotImplementedError
@@ -56,57 +49,60 @@ class Urn(Iterator, Sized):
     def __next__(self):
         """Return next element in population based on urn parameters."""
 
+        # -------------- WEIGHTED SAMPLING WITH REPLACEMENT -------------------
         # Get next element in a collection of weighted elements
-        if self.replace and self.weights:
+        if self.replace and self._weights:
             # Accumulate the weights for the population
-            weights = list(itertools.accumulate(self.weights))
+            weights = list(itertools.accumulate(self._weights))
             # Get a random weight within the weight distribution
             choice = weights[-1] * random.random()
             # Find the index the random weight corresponds to
             index = bisect.bisect_left(weights, choice)
-            return self.population[index]
+            return self._population[index]
 
+        # -------------- UNWEIGHTED SAMPLING WITH REPLACEMENT -----------------
         # Get next element in a collection of unweighted elements
-        elif self.replace and not self.weights:
+        elif self.replace and not self._weights:
             # Get a random index within the boundaries of our collection
-            index_choice = math.floor(random.random() * len(self.population))
-            return self.population[index_choice]
+            index_choice = math.floor(random.random() * len(self._population))
+            return self._population[index_choice]
 
-        elif not self.replace and self.weights:
-            if self.num_remaining == 0:
+        # -------------- WEIGHTED SAMPLING WITHOUT REPLACEMENT ----------------
+        elif not self.replace and self._weights:
+            if self._num_remaining == 0:
                 raise StopIteration
-            self.num_remaining -= 1
+            self._num_remaining -= 1
 
             pick = random.random() * self.cumulative_sum_tree.get_sum()
             index = self.cumulative_sum_tree.query(pick)
             self.cumulative_sum_tree.update_weight(index, 0)
-            return self.population[index]
+            return self._population[index]
 
+        # -------------- UNWEIGHTED SAMPLING WITH REPLACEMENT -----------------
         # Get next element in a collection of unweighted elements without replace
         # We implement the Fisher-Yates shuffle (1938)
         # See https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
         # This is the implementation of the modern method (Richard Durstenfeld, 1964)
-        elif not self.replace and not self.weights:
+        elif not self.replace and not self._weights:
 
-            if self.num_remaining == 0:
+            if self._num_remaining == 0:
                 raise StopIteration
-            self.num_remaining -= 1
+            self._num_remaining -= 1
 
             # generate a random number in [0, num_remaining]
-            pick = math.floor(random.random() * (self.num_remaining + 1))
+            pick = math.floor(random.random() * (self._num_remaining + 1))
 
             # Move our pick to the last index within current range, return it
-            self.population[self.num_remaining], self.population[pick] = (
-                self.population[pick],
-                self.population[self.num_remaining],
+            self._population[self._num_remaining], self._population[pick] = (
+                self._population[pick],
+                self._population[self._num_remaining],
             )
-            return self.population[self.num_remaining]
+            return self._population[self._num_remaining]
 
 
-def sample(population, size, replace=False, weights=None):
+def sample(population, size=1, replace=False, weights=None):
     """
-    sample takes a sample of the specified size from the elements of population 
-    using either with or without replacement, with or without weights.
+    Draw samples from a collection.
     
     Parameters
     ----------
@@ -114,7 +110,7 @@ def sample(population, size, replace=False, weights=None):
         The data points. 
     
     replace: bool
-        Sample with or without replacement?
+        Sample with or without replacement.
         
     weights: list
         One weight per data point. If None is
@@ -131,13 +127,17 @@ def sample(population, size, replace=False, weights=None):
     --------
     >>> data = [1, 3, 4, 7]
     >>> weights = [3, 4, 2, 1]
-    >>> sample(population=data, replace=False, weights=weights)
-    >>> sample(population=data, replace=False, weights=None)
+    >>> sample(data, replace=False, weights=weights)
+    >>> sample(data, replace=False, weights=None)
     
     """
-
     urn = Urn(population=population, replace=replace, weights=weights)
     return list(itertools.islice(urn, size))
+
+
+def permute(population):
+    """Randomly permute the population."""
+    return list(Urn(population=population, replace=False, weights=None))
 
 
 if __name__ == "__main__":
