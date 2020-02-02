@@ -135,6 +135,11 @@ def sample(population, size=1, replace=False, weights=None):
     return list(itertools.islice(urn, size))
 
 
+def permute(population):
+    """Randomly permute the population."""
+    return list(Urn(population=population, replace=False, weights=None))
+
+
 if __name__ == "__main__":
     """
     tree = CumulativeSumTree([0.2, 0.3, 0.1, 0.4, 0.8])
