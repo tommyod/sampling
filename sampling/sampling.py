@@ -49,6 +49,7 @@ class Urn(Iterator, Sized):
     def __next__(self):
         """Return next element in population based on urn parameters."""
 
+        # -------------- WEIGHTED SAMPLING WITH REPLACEMENT -------------------
         # Get next element in a collection of weighted elements
         if self.replace and self._weights:
             # Accumulate the weights for the population
@@ -59,12 +60,14 @@ class Urn(Iterator, Sized):
             index = bisect.bisect_left(weights, choice)
             return self._population[index]
 
+        # -------------- UNWEIGHTED SAMPLING WITH REPLACEMENT -----------------
         # Get next element in a collection of unweighted elements
         elif self.replace and not self._weights:
             # Get a random index within the boundaries of our collection
             index_choice = math.floor(random.random() * len(self._population))
             return self._population[index_choice]
 
+        # -------------- WEIGHTED SAMPLING WITHOUT REPLACEMENT ----------------
         elif not self.replace and self._weights:
             if self._num_remaining == 0:
                 raise StopIteration
@@ -75,6 +78,7 @@ class Urn(Iterator, Sized):
             self.cumulative_sum_tree.update_weight(index, 0)
             return self._population[index]
 
+        # -------------- UNWEIGHTED SAMPLING WITH REPLACEMENT -----------------
         # Get next element in a collection of unweighted elements without replace
         # We implement the Fisher-Yates shuffle (1938)
         # See https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
@@ -96,10 +100,9 @@ class Urn(Iterator, Sized):
             return self._population[self._num_remaining]
 
 
-def sample(population, size, replace=False, weights=None):
+def sample(population, size=1, replace=False, weights=None):
     """
-    sample takes a sample of the specified size from the elements of population 
-    using either with or without replacement, with or without weights.
+    Draw samples from a collection.
     
     Parameters
     ----------
@@ -107,7 +110,7 @@ def sample(population, size, replace=False, weights=None):
         The data points. 
     
     replace: bool
-        Sample with or without replacement?
+        Sample with or without replacement.
         
     weights: list
         One weight per data point. If None is
@@ -124,11 +127,10 @@ def sample(population, size, replace=False, weights=None):
     --------
     >>> data = [1, 3, 4, 7]
     >>> weights = [3, 4, 2, 1]
-    >>> sample(population=data, replace=False, weights=weights)
-    >>> sample(population=data, replace=False, weights=None)
+    >>> sample(data, replace=False, weights=weights)
+    >>> sample(data, replace=False, weights=None)
     
     """
-
     urn = Urn(population=population, replace=replace, weights=weights)
     return list(itertools.islice(urn, size))
 
