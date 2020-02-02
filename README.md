@@ -13,13 +13,16 @@ weights = [1., 1.1, 1.5, 2.]
 samples_count = 3
 
 # No replacement, no weights
-sample1 = sample(data, samples_count)
+example1 = sample(data, samples_count)
+
 # With replacement, no weights
-sample2 = sample(data, samples_count, replace=True)
+example2 = sample(data, samples_count, replace=True)
+
 # No replacement, with weights
-sample3 = sample(data, samples_count, weights=weights)
+example3 = sample(data, samples_count, weights=weights)
+
 # With replacement, with weights
-replace_weights = sample(data, samples_count, replace=True, weights=weights)
+example4 = sample(data, samples_count, replace=True, weights=weights)
 ```
 
 ### Example 2 - Four sampling techniques with the Urn object
@@ -27,25 +30,21 @@ replace_weights = sample(data, samples_count, replace=True, weights=weights)
 from sampling import Urn
 data = [1,2,3,4]
 
-# 1. sampling without replacement, no weights
+# No replacement, no weights
 urn = Urn(population=data, replace=False, weights=None)
 example1 = tuple(urn)
-print(example1)
 
-# 2. sampling with replacement, no weights
+# With replacement, no weights
 urn = Urn(data, replace=True, weights=None)
 example2 = tuple(itertools.islice(urn, len(data)))   
-print(example2)
 
-# 3. sampling with replacement, with weights
+# No replacement, with weights
 urn = Urn(data, replace=True, weights=(1, 1, 2, 2))
 example3 = tuple(itertools.islice(urn, len(data)))
-print(example3)
 
-# 4. sampling without replacement, with weights
+# With replacement, with weights
 urn = Urn(data, replace=False, weights=(1, 1, 2, 2))
 example4 = tuple(itertools.islice(urn, len(data)))
-print(example4)
 ```
 
 ## Installation
