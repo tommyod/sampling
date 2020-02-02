@@ -104,6 +104,13 @@ class UnweightedFiniteUrn(Iterator):
     def size(self):
         return self._num_remaining
 
+    def extend(self, population):
+        population = list(population)
+        extra_length = len(population)
+        population.extend(self.population)
+        self._population = population
+        self._num_remaining += extra_length
+
 
 class UnweightedInfiniteUrn(Iterator):
     def __init__(self, population):
@@ -126,10 +133,12 @@ class UnweightedInfiniteUrn(Iterator):
         # Get a random index within the boundaries of our collection
         index_choice = math.floor(random.random() * len(self._population))
         return self._population[index_choice]
-        
 
     def size(self):
         return float("inf")
+
+    def extend(self, population):
+        self._population.extend(list(population))
 
 
 def Urn(population, replace=False, weights=None):

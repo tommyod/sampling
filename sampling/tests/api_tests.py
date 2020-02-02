@@ -103,6 +103,22 @@ class TestUrn:
         assert samples1 == samples3
         assert samples2 == samples3
 
+    def test_list_extension(self):
+        """Test the extend method"""
+        data = "abcdef"
+        urn = Urn(data, replace=False)
+        assert urn.size() == 6
+        urn.extend("xy")
+        assert urn.size() == 8
+
+    @pytest.mark.parametrize("replace", [True, False])
+    def test_list_extension_temp(self, replace):
+        """Test the extend method"""
+        data = "abcdef"
+        urn = Urn(data, replace=replace)
+        urn.extend("xy")
+        assert set(["x", "y"]).issubset(set(itertools.islice(urn, 1000)))
+
 
 class TestSampleFunction:
     @pytest.mark.parametrize("k", [1, 5, 25])
