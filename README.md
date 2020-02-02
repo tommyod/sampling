@@ -3,7 +3,7 @@
 An efficient pure Python implementation of sampling with and without replacement, with and without weights. Works with Python 3.6+.
 
 ## Getting started
-We use an Urn object to represent the collection of objects we want to sample from. See examples below.
+We use an Urn object to represent the collection of objects we want to sample from. A wrapper method is available for simplification. See examples below.
 
 ### Example 1 - Four sampling techniques with wrapper
 ```python
@@ -28,23 +28,27 @@ example4 = sample(data, samples_count, replace=True, weights=weights)
 ### Example 2 - Four sampling techniques with the Urn object
 ```python
 from sampling import Urn
+import itertools
+
 data = [1,2,3,4]
+weights = [1.1, 1.2, 1.3, 1.4]
+samples_cnt = 3
 
 # No replacement, no weights
-urn = Urn(population=data, replace=False, weights=None)
-example1 = tuple(urn)
+urn = Urn(population=data)
+example1 = list(itertools.islice(urn, samples_count))
 
 # With replacement, no weights
-urn = Urn(data, replace=True, weights=None)
-example2 = tuple(itertools.islice(urn, len(data)))   
+urn = Urn(data, replace=True)
+example2 = list(itertools.islice(urn, samples_count))   
 
 # No replacement, with weights
-urn = Urn(data, replace=True, weights=(1, 1, 2, 2))
-example3 = tuple(itertools.islice(urn, len(data)))
+urn = Urn(data, weights=weights)
+example3 = list(itertools.islice(urn, samples_count))
 
 # With replacement, with weights
-urn = Urn(data, replace=False, weights=(1, 1, 2, 2))
-example4 = tuple(itertools.islice(urn, len(data)))
+urn = Urn(data, replace=True, weights=weights)
+example4 = list(itertools.islice(urn, samples_count))
 ```
 
 ## Installation
