@@ -5,24 +5,24 @@ An efficient pure Python implementation of sampling with and without replacement
 ## Getting started
 We use an Urn object to represent the collection of objects we want to sample from. See examples below.
 
-### Example 1 - Initialization and usage
+### Example 1 - Four sampling techniques with wrapper
 ```python
-from sampling import Urn
-import itertools
+from sampling import sample
+data = ['a','b','b','c']
+weights = [1., 1.1, 1.5, 2.]
+samples_count = 3
 
-data = [1,2,3,4]
+# No replacement, no weights
+sample1 = sample(data, samples_count)
+# With replacement, no weights
+sample2 = sample(data, samples_count, replace=True)
+# No replacement, with weights
+sample3 = sample(data, samples_count, weights=weights)
+# With replacement, with weights
+replace_weights = sample(data, samples_count, replace=True, weights=weights)
+```
 
-# Without replacement
-urn = Urn(data, replace=False, weights=None)
-list_of_remaining_samples = list(urn)
-
-# With replacement
-urn = Urn(data, replace=True, weights=None)
-single_sample = next(urn)
-list_of_5_samples = list(itertools.islice(urn, 5))
-``` 
-
-### Example 2 - Four sampling techniques
+### Example 2 - Four sampling techniques with the Urn object
 ```python
 from sampling import Urn
 data = [1,2,3,4]
