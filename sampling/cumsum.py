@@ -20,8 +20,8 @@ class CumulativeSum:
 
     def query(self, search_weight):
         assert 0 <= search_weight <= self.get_sum()
-        
-        index = np.searchsorted(self.cumulative_weights, search_weight, side='left', sorter=None)
+
+        index = np.searchsorted(self.cumulative_weights, search_weight, side="left", sorter=None)
         return index
 
     def update_weight(self, index, weight):
@@ -30,7 +30,7 @@ class CumulativeSum:
 
     def __getitem__(self, index):
         return self.weights[index]
-    
+
     def remove(self, index):
         self.weights = np.delete(self.weights, index)
         self.cumulative_weights = np.cumsum(self.weights)
