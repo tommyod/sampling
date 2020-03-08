@@ -136,6 +136,17 @@ class TestUrn:
         for element in urn:
             assert element not in urn
 
+    def test_remove(self):
+        """Test the __contains__ method"""
+        data = "abcdef"
+        to_remove = "bcd"
+        urn = Urn(data, replace=False)
+        # Draw one sample, then verify that element is not still in the urn
+        for element in to_remove:
+            assert element in urn
+            urn.remove(element)
+            assert element not in urn
+
 
 class TestSampleFunction:
     @pytest.mark.parametrize("k", [1, 5, 25])

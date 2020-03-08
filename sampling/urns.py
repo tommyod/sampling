@@ -124,6 +124,14 @@ class UnweightedFiniteUrn(Iterator):
         self._population = population
         self._num_remaining += extra_length
 
+    def add(self, element):
+        self.extend([element])
+
+    def remove(self, element):
+        i = self._population[: self._num_remaining].index(element)
+        self._population.pop(i)
+        self._num_remaining -= 1
+
 
 class UnweightedInfiniteUrn(Iterator):
     def __init__(self, population):
