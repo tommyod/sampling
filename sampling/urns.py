@@ -5,7 +5,6 @@ import bisect
 from sampling.cumsum import CumulativeSum
 import numbers
 import collections
-import json
 from collections.abc import Iterator
 
 
