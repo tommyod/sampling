@@ -108,7 +108,7 @@ class WeightedInfiniteUrn(Iterator):
         return self._population[index]
 
     def size(self):
-        #TODO: Think about what size of an infinite urn should mean
+        # TODO: Think about what size of an infinite urn should mean
         return float("inf")
 
     def update_weight(self, index, value):
@@ -211,7 +211,7 @@ class UnweightedInfiniteUrn(Iterator):
         return self._population[index_choice]
 
     def size(self):
-        #TODO: Think about what size of an infinite urn should mean
+        # TODO: Think about what size of an infinite urn should mean
         return float("inf")
 
     def extend(self, population):
