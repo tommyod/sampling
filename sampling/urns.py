@@ -2,7 +2,7 @@ import random
 import math
 import itertools
 import bisect
-from sampling.tree import CumulativeSumTree
+from sampling.cumsum import CumulativeSum
 import numbers
 
 from collections.abc import Iterator
@@ -13,7 +13,7 @@ class WeightedFiniteUrn(Iterator):
         self._population = list(population)
         self._weights = list(weights)
         self._num_remaining = len(self._population)
-        self._cumulative_sum_tree = CumulativeSumTree(self._weights)
+        self._cumulative_sum = CumulativeSum(self._weights)
 
     def __repr__(self):
         return type(self).__name__
@@ -33,9 +33,9 @@ class WeightedFiniteUrn(Iterator):
             raise StopIteration
         self._num_remaining -= 1
 
-        pick = random.random() * self._cumulative_sum_tree.get_sum()
-        index = self._cumulative_sum_tree.query(pick)
-        self._cumulative_sum_tree.update_weight(index, 0)
+        pick = random.random() * self._cumulative_sum.get_sum()
+        index = self._cumulative_sum.query(pick)
+        self._cumulative_sum.update_weight(index, 0)
         return self._population[index]
 
     def size(self):
@@ -45,7 +45,7 @@ class WeightedFiniteUrn(Iterator):
         if not isinstance(index, numbers.Integral):
             raise TypeError("'index' must be an integer")
         assert value >= 0  # TODO: Proper type check
-        self._cumulative_sum_tree.update_weight(index, value)
+        self._cumulative_sum.update_weight(index, value)
 
 
 class WeightedInfiniteUrn(Iterator):
