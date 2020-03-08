@@ -136,6 +136,42 @@ class TestUrn:
         for element in urn:
             assert element not in urn
 
+    def test_remove(self):
+        """Test the __contains__ method"""
+        data = "abcdef"
+        to_remove = "bcd"
+        urn = Urn(data, replace=False)
+        # Draw one sample, then verify that element is not still in the urn
+        for element in to_remove:
+            assert element in urn
+            urn.remove(element)
+            assert element not in urn
+
+    @pytest.mark.parametrize("replace", [True, False])
+    def test_add_weighted(self, replace):
+        data = "acf"
+        weights = [1, 2, 3]
+        more_data = "bde"
+        more_weights = [4, 5, 6]
+        urn = Urn(data, replace, weights)
+        for element, weight in zip(more_data, more_weights):
+            assert element not in urn
+            urn.add(element, weight)
+            assert element in urn
+        assert urn.size() == 6 or urn.size() == float("inf")
+
+    @pytest.mark.parametrize("replace", [True, False])
+    def test_remove_weighted(self, replace):
+        data = "abcdef"
+        weights = [1, 2, 3, 4, 5, 6]
+        to_remove = "bde"
+        urn = Urn(data, replace, weights)
+        for element in to_remove:
+            assert element in urn
+            urn.remove(element)
+            assert element not in urn
+        assert urn.size() == 3 or urn.size() == float("inf")
+
 
 class TestSampleFunction:
     @pytest.mark.parametrize("k", [1, 5, 25])
