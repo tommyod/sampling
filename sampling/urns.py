@@ -4,8 +4,7 @@ import itertools
 import bisect
 from sampling.cumsum import CumulativeSum
 import numbers
-import collections
-from collections.abc import Iterator
+from collections.abc import Iterator, Hashable
 
 
 class WeightedFiniteUrn(Iterator):
@@ -15,7 +14,7 @@ class WeightedFiniteUrn(Iterator):
         assert not isinstance(weights, set)
 
         self._population = list(population)
-        assert all(isinstance(e, collections.Hashable) for e in self._population)
+        assert all(isinstance(e, Hashable) for e in self._population)
         assert len(self._population) == len(set(self._population))
 
         _weights = list(weights)
@@ -65,7 +64,7 @@ class WeightedFiniteUrn(Iterator):
         assert not isinstance(weights, set)
         _elements = list(elements)
         self._population.extend(_elements)
-        assert all(isinstance(e, collections.Hashable) for e in _elements)
+        assert all(isinstance(e, Hashable) for e in _elements)
         assert len(_elements) == len(set(_elements))
 
         self._cumulative_sum_object.extend(weights)

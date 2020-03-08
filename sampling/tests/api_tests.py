@@ -147,6 +147,18 @@ class TestUrn:
             urn.remove(element)
             assert element not in urn
 
+    def test_add_weighted_finite(self):
+        data = "acf"
+        weights = [1, 2, 3]
+        more_data = "bde"
+        more_weights = [4, 5, 6]
+        urn = Urn(data, False, weights)
+        for element, weight in zip(more_data, more_weights):
+            assert element not in urn
+            urn.add(element, weight)
+            assert element in urn
+        assert urn.size() == 6
+
     def test_remove_weighted_finite(self):
         data = "abcdef"
         weights = [1, 2, 3, 4, 5, 6]
