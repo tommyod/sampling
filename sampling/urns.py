@@ -1,7 +1,5 @@
 import random
 import math
-import itertools
-import bisect
 from sampling.cumsum import CumulativeSum
 import numbers
 from collections.abc import Iterator, Hashable
