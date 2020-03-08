@@ -20,9 +20,7 @@ class WeightedFiniteUrn(Iterator):
         _weights = list(weights)
         assert all(w >= 0 for w in _weights)
 
-        # self._num_remaining = len(self._population)
         self._cumulative_sum_object = CumulativeSum(_weights)
-        # self._index_lookup = {e: i for (i, e) in enumerate(self._population)}
 
     def __repr__(self):
         return type(self).__name__
@@ -35,20 +33,16 @@ class WeightedFiniteUrn(Iterator):
 
     def __contains__(self, value):
         return value in self._population
-        # return value in self._index_lookup.keys()
 
     def __next__(self):
         if self.size() == 0:
             raise StopIteration
-        # self._num_remaining -= 1
 
         pick = random.random() * self._cumulative_sum_object.get_sum()
         index = self._cumulative_sum_object.query(pick)
         value = self._population[index]
         self.remove(value)
         return value
-        # value =self._cumulative_sum_object.update_weight(index, 0)
-        # return self._population[index]
 
     def size(self):
         return len(self._population)
@@ -68,25 +62,30 @@ class WeightedFiniteUrn(Iterator):
         assert len(_elements) == len(set(_elements))
 
         self._cumulative_sum_object.extend(weights)
-        self._num_remaining = len(self._population)
-        # self._index_lookup.update({e: i for (i, e) in enumerate(elements, len(self._population))})
 
     def add(self, element, weight):
         self.extend([element], [weight])
 
     def remove(self, element):
-        # index = self._index_lookup[element]
         index = self._population.index(element)
         self._population.pop(index)
         self._cumulative_sum_object.remove(index)
-        # del self._index_lookup[element]
 
 
 class WeightedInfiniteUrn(Iterator):
     def __init__(self, population, weights):
+        # TODO: Better error messages
+        assert not isinstance(population, set)
+        assert not isinstance(weights, set)
+
         self._population = list(population)
-        self._weights = list(weights)
-        self._cumulative_weights = list(itertools.accumulate(self._weights))
+        assert all(isinstance(e, Hashable) for e in self._population)
+        assert len(self._population) == len(set(self._population))
+
+        _weights = list(weights)
+        assert all(w >= 0 for w in _weights)
+
+        self._cumulative_sum_object = CumulativeSum(_weights)
 
     def __repr__(self):
         return type(self).__name__
@@ -95,25 +94,46 @@ class WeightedInfiniteUrn(Iterator):
         return self
 
     def __bool__(self):
-        return len(self._population) > 0
+        return self.size() > 0
 
     def __contains__(self, value):
-        # TODO: Implement this
-        raise NotImplementedError
+        return value in self._population
 
     def __next__(self):
-        # Get a random weight within the weight distribution
-        choice = self._cumulative_weights[-1] * random.random()
-        # Find the index the random weight corresponds to
-        index = bisect.bisect_left(self._cumulative_weights, choice)
+        if self.size() == 0:
+            raise StopIteration
+
+        pick = random.random() * self._cumulative_sum_object.get_sum()
+        index = self._cumulative_sum_object.query(pick)
         return self._population[index]
 
     def size(self):
+        #TODO: Think about what size of an infinite urn should mean
         return float("inf")
 
     def update_weight(self, index, value):
-        """ TODO: Implement """
-        raise NotImplementedError
+        if not isinstance(index, numbers.Integral):
+            raise TypeError("'index' must be an integer")
+        assert value >= 0  # TODO: Proper type check
+        self._cumulative_sum_object.update_weight(index, value)
+
+    def extend(self, elements, weights):
+        assert not isinstance(elements, set)
+        assert not isinstance(weights, set)
+        _elements = list(elements)
+        self._population.extend(_elements)
+        assert all(isinstance(e, Hashable) for e in _elements)
+        assert len(_elements) == len(set(_elements))
+
+        self._cumulative_sum_object.extend(weights)
+
+    def add(self, element, weight):
+        self.extend([element], [weight])
+
+    def remove(self, element):
+        index = self._population.index(element)
+        self._population.pop(index)
+        self._cumulative_sum_object.remove(index)
 
 
 class UnweightedFiniteUrn(Iterator):
@@ -191,6 +211,7 @@ class UnweightedInfiniteUrn(Iterator):
         return self._population[index_choice]
 
     def size(self):
+        #TODO: Think about what size of an infinite urn should mean
         return float("inf")
 
     def extend(self, population):
@@ -230,17 +251,3 @@ def Urn(population, replace=False, weights=None):
     else:
         # TODO: Raise proper exception
         raise Exception
-
-
-data = "abcdef"
-weights = [1, 2, 3, 4, 5, 6]
-to_remove = "bde"
-urn = Urn(data, False, weights)
-print(urn._population)
-for element in to_remove:
-    assert element in urn
-    urn.remove(element)
-    assert element not in urn
-
-
-assert urn.size() == 3

@@ -147,28 +147,30 @@ class TestUrn:
             urn.remove(element)
             assert element not in urn
 
-    def test_add_weighted_finite(self):
+    @pytest.mark.parametrize("replace", [True, False])
+    def test_add_weighted(self, replace):
         data = "acf"
         weights = [1, 2, 3]
         more_data = "bde"
         more_weights = [4, 5, 6]
-        urn = Urn(data, False, weights)
+        urn = Urn(data, replace, weights)
         for element, weight in zip(more_data, more_weights):
             assert element not in urn
             urn.add(element, weight)
             assert element in urn
-        assert urn.size() == 6
+        assert urn.size() == 6 or urn.size() == float("inf")
 
-    def test_remove_weighted_finite(self):
+    @pytest.mark.parametrize("replace", [True, False])
+    def test_remove_weighted(self, replace):
         data = "abcdef"
         weights = [1, 2, 3, 4, 5, 6]
         to_remove = "bde"
-        urn = Urn(data, False, weights)
+        urn = Urn(data, replace, weights)
         for element in to_remove:
             assert element in urn
             urn.remove(element)
             assert element not in urn
-        assert urn.size() == 3
+        assert urn.size() == 3 or urn.size() == float("inf")
 
 
 class TestSampleFunction:
