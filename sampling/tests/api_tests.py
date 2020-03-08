@@ -147,6 +147,17 @@ class TestUrn:
             urn.remove(element)
             assert element not in urn
 
+    def test_remove_weighted_finite(self):
+        data = "abcdef"
+        weights = [1, 2, 3, 4, 5, 6]
+        to_remove = "bde"
+        urn = Urn(data, False, weights)
+        for element in to_remove:
+            assert element in urn
+            urn.remove(element)
+            assert element not in urn
+        assert urn.size() == 3
+
 
 class TestSampleFunction:
     @pytest.mark.parametrize("k", [1, 5, 25])

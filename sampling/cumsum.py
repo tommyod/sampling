@@ -34,3 +34,7 @@ class CumulativeSum:
     def remove(self, index):
         self.weights = np.delete(self.weights, index)
         self.cumulative_weights = np.cumsum(self.weights)
+
+    def extend(self, weights):
+        self.weights = np.append(self.weights, weights)
+        self.cumulative_weights = np.cumsum(self.weights)
