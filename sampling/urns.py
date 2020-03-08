@@ -5,6 +5,7 @@ import bisect
 from sampling.cumsum import CumulativeSum
 import numbers
 import collections
+import json
 from collections.abc import Iterator
 
 
@@ -21,9 +22,9 @@ class WeightedFiniteUrn(Iterator):
         _weights = list(weights)
         assert all(w >= 0 for w in _weights)
 
-        self._num_remaining = len(self._population)
+        # self._num_remaining = len(self._population)
         self._cumulative_sum_object = CumulativeSum(_weights)
-        self._index_lookup = {e: i for (i, e) in enumerate(self._population)}
+        # self._index_lookup = {e: i for (i, e) in enumerate(self._population)}
 
     def __repr__(self):
         return type(self).__name__
@@ -35,20 +36,24 @@ class WeightedFiniteUrn(Iterator):
         return self.size() > 0
 
     def __contains__(self, value):
-        return value in self._index_lookup.keys()
+        return value in self._population
+        # return value in self._index_lookup.keys()
 
     def __next__(self):
-        if self._num_remaining == 0:
+        if self.size() == 0:
             raise StopIteration
-        self._num_remaining -= 1
+        # self._num_remaining -= 1
 
         pick = random.random() * self._cumulative_sum_object.get_sum()
         index = self._cumulative_sum_object.query(pick)
-        self._cumulative_sum_object.update_weight(index, 0)
-        return self._population[index]
+        value = self._population[index]
+        self.remove(value)
+        return value
+        # value =self._cumulative_sum_object.update_weight(index, 0)
+        # return self._population[index]
 
     def size(self):
-        return self._num_remaining
+        return len(self._population)
 
     def update_weight(self, index, value):
         if not isinstance(index, numbers.Integral):
@@ -66,16 +71,17 @@ class WeightedFiniteUrn(Iterator):
 
         self._cumulative_sum_object.extend(weights)
         self._num_remaining = len(self._population)
-        self._index_lookup.update({e: i for (i, e) in enumerate(elements, len(self._population))})
+        # self._index_lookup.update({e: i for (i, e) in enumerate(elements, len(self._population))})
 
     def add(self, element, weight):
         self.extend([element], [weight])
 
     def remove(self, element):
-        index = self._index_lookup[element]
+        # index = self._index_lookup[element]
+        index = self._population.index(element)
         self._population.pop(index)
         self._cumulative_sum_object.remove(index)
-        del self._index_lookup[element]
+        # del self._index_lookup[element]
 
 
 class WeightedInfiniteUrn(Iterator):
@@ -226,3 +232,17 @@ def Urn(population, replace=False, weights=None):
     else:
         # TODO: Raise proper exception
         raise Exception
+
+
+data = "abcdef"
+weights = [1, 2, 3, 4, 5, 6]
+to_remove = "bde"
+urn = Urn(data, False, weights)
+print(urn._population)
+for element in to_remove:
+    assert element in urn
+    urn.remove(element)
+    assert element not in urn
+
+
+assert urn.size() == 3
