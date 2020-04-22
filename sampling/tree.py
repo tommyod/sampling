@@ -4,7 +4,7 @@ import math
 class CumulativeSumTree:
     def __init__(self, weights):
         self.weights = list(weights)
-        if any(weights < 0):
+        if any(w < 0 for w in weights):
             raise ValueError("all weights must be greater than or equal to zero.")
 
         self.leaf_nodes = int(2 ** math.ceil(math.log(len(weights), 2)))
