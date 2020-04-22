@@ -1,0 +1,8 @@
+-e file:.#egg=sampling
+
+black
+pytest
+flake8
+twine
+numpy
+matplotlib
