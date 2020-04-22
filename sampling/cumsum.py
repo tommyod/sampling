@@ -13,7 +13,7 @@ class CumulativeSum:
     def __init__(self, weights):
         self.weights = np.array(weights)
         if np.any(self.weights < 0):
-            raise ValueError("all weights must be greater than zero.")
+            raise ValueError("all weights must be greater than or equal to zero.")
         self.cumulative_weights = np.cumsum(self.weights)
 
     def get_sum(self):
