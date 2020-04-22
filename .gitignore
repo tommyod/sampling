@@ -4,3 +4,4 @@
 .vscode
 *.in
 .mypy_cache
+.pytest_cache
