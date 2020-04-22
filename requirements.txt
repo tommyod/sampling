@@ -1,8 +1,0 @@
-# TESTING AND DEVELOPMENT DEPENDENCIES
-# installation dependencies are found in setup.py
-black
-pytest
-flake8
-twine
-numpy
-matplotlib
