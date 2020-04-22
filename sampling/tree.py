@@ -3,61 +3,72 @@ import math
 
 class CumulativeSumTree:
     def __init__(self, weights):
-        assert isinstance(weights, list)
-        assert all(w >= 0 for w in weights)
+        self.weights = list(weights)
+        if any(weights < 0):
+            raise ValueError("all weights must be greater than or equal to zero.")
 
         self.leaf_nodes = int(2 ** math.ceil(math.log(len(weights), 2)))
-        self.bst = [0] * self.leaf_nodes
-        self.bst.extend(weights)
-        self.bst.extend((self.leaf_nodes - len(weights)) * [0])
         self.right_sums = [0] * self.leaf_nodes
+        self.bst = self._initialise_bst()
+        self._build_tree()
 
+    def _initialise_bst(self):
+        bst = [0] * self.leaf_nodes
+        bst.extend(self.weights)
+        bst.extend((self.leaf_nodes - len(self.weights)) * [0])
+        return bst
+
+    def _build_tree(self):
         nodes_in_level = self.leaf_nodes // 2
+
         while nodes_in_level > 0:
-            # loop over every node at this level in the tree
-            for i in range(nodes_in_level, nodes_in_level * 2):
-
+            # Loop over every node at this level in the tree
+            for node in range(nodes_in_level, nodes_in_level * 2):
                 # Get indices of children
-                left_child_index = self._left_child(i)
-                right_child_index = self._right_child(i)
+                left_child_index = self._left_child(node)
+                right_child_index = self._right_child(node)
 
-                # recursively set the sums
+                # Recursively set the sums
                 if self._is_leaf(left_child_index):
-                    self.bst[i] = self.bst[left_child_index]
-                    self.right_sums[i] = self.bst[right_child_index]
+                    self.bst[node] = self.bst[left_child_index]
+                    self.right_sums[node] = self.bst[right_child_index]
                 else:
-                    self.bst[i] = self.bst[left_child_index] + self.right_sums[left_child_index]
-                    self.right_sums[i] = self.bst[right_child_index] + self.right_sums[right_child_index]
+                    self.bst[node] = (
+                        self.bst[left_child_index] + self.right_sums[left_child_index]
+                    )
+                    self.right_sums[node] = (
+                        self.bst[right_child_index] + self.right_sums[right_child_index]
+                    )
 
-            # go up one level in the tree
+            # Go up one level in the tree
             nodes_in_level = nodes_in_level // 2
 
-    def _is_leaf(self, i):
-        return i >= self.leaf_nodes
+    def _is_leaf(self, idx):
+        return idx >= self.leaf_nodes
 
-    def _left_child(self, i):
-        return 2 * i
+    def _left_child(self, idx):
+        return 2 * idx
 
-    def _right_child(self, i):
-        return 2 * i + 1
+    def _right_child(self, idx):
+        return 2 * idx + 1
 
-    def _parent(self, i):
-        return i // 2
+    def _parent(self, idx):
+        return idx // 2
 
     def get_sum(self):
         return self.bst[1] + self.right_sums[1]
 
     def query(self, search_weight):
-        assert 0 <= search_weight <= self.get_sum()
+        if not 0 <= search_weight <= self.get_sum():
+            raise ValueError(f"queried weight must be between 0 and {self.get_sum()}")
 
         current_index = 1
 
         while not self._is_leaf(current_index):
-            # go left down the tree
+            # Go left down the tree
             if search_weight <= self.bst[current_index]:
                 current_index = self._left_child(current_index)
-
-            # go right down the tree
+            # Go right down the tree
             else:
                 search_weight -= self.bst[current_index]
                 current_index = self._right_child(current_index)
@@ -70,26 +81,28 @@ class CumulativeSumTree:
         self.bst[index] = weight
 
         # Set parent left and right sums
-        prev = index
-        curr = self._parent(prev)
+        previous = index
+        current = self._parent(previous)
 
         # Parent of a left child
-        if prev % 2 == 0:
-            self.bst[curr] = weight
+        if previous % 2 == 0:
+            self.bst[current] = weight
         else:
-            self.right_sums[curr] = weight
+            self.right_sums[current] = weight
 
         # Move one tree level up
-        curr, prev = self._parent(curr), curr
-        while curr >= 1:
+        current, previous = self._parent(current), current
+        while current >= 1:
             # We came from the left
-            if prev % 2 == 0:
-                self.bst[curr] = self.bst[prev] + self.right_sums[prev]
+            if previous % 2 == 0:
+                self.bst[current] = self.bst[previous] + self.right_sums[previous]
             # We came from the right
             else:
-                self.right_sums[curr] = self.bst[prev] + self.right_sums[prev]
+                self.right_sums[current] = (
+                    self.bst[previous] + self.right_sums[previous]
+                )
             # Move one tree level up
-            curr, prev = self._parent(curr), curr
+            current, previous = self._parent(current), current
 
     def __getitem__(self, index):
         return self.bst[self.leaf_nodes + index]
