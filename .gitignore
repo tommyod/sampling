@@ -3,3 +3,4 @@
 .venv
 .vscode
 *.in
+.mypy_cache
