@@ -8,17 +8,18 @@ from collections.abc import Iterator, Hashable
 class WeightedFiniteUrn(Iterator):
     def __init__(self, population, weights):
         # TODO: Better error messages
-        assert not isinstance(population, set)
-        assert not isinstance(weights, set)
-
         self._population = list(population)
-        assert all(isinstance(e, Hashable) for e in self._population)
-        assert len(self._population) == len(set(self._population))
+        self._weights = list(weights)
+        if any(w < 0 for w in self._weights):
+            raise ValueError("all weights must be greater than or equal to zero.")
 
-        _weights = list(weights)
-        assert all(w >= 0 for w in _weights)
+        if not all(isinstance(e, Hashable) for e in self._population):
+            raise TypeError("elements of population must be hashable.")
 
-        self._cumulative_sum_object = CumulativeSum(_weights)
+        if len(self._population) != len(set(self._population)):
+            raise ValueError("population must contain unique elements.")
+
+        self._cumulative_sum_object = CumulativeSum(self._weights)
 
     def __repr__(self):
         return type(self).__name__
@@ -35,7 +36,6 @@ class WeightedFiniteUrn(Iterator):
     def __next__(self):
         if self.size() == 0:
             raise StopIteration
-
         pick = random.random() * self._cumulative_sum_object.get_sum()
         index = self._cumulative_sum_object.query(pick)
         value = self._population[index]
@@ -48,16 +48,23 @@ class WeightedFiniteUrn(Iterator):
     def update_weight(self, index, value):
         if not isinstance(index, numbers.Integral):
             raise TypeError("'index' must be an integer")
-        assert value >= 0  # TODO: Proper type check
+        if value < 0:
+            raise ValueError("'value' must be greater than or equal to zero.")
         self._cumulative_sum_object.update_weight(index, value)
 
     def extend(self, elements, weights):
-        assert not isinstance(elements, set)
-        assert not isinstance(weights, set)
-        _elements = list(elements)
-        self._population.extend(_elements)
-        assert all(isinstance(e, Hashable) for e in _elements)
-        assert len(_elements) == len(set(_elements))
+        if not all(isinstance(e, Hashable) for e in elements):
+            # TODO: raise exception
+            pass
+        if len(elements) != len(set(elements)):
+            # TODO: raise exception
+            pass
+        assert not isinstance(weights, set)  # TODO: Refactor
+
+        try:
+            self._population.extend(list(elements))
+        except Exception as e:
+            raise e  # TODO
 
         self._cumulative_sum_object.extend(weights)
 
