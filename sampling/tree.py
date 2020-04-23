@@ -33,12 +33,8 @@ class CumulativeSumTree:
                     self.bst[node] = self.bst[left_child_index]
                     self.right_sums[node] = self.bst[right_child_index]
                 else:
-                    self.bst[node] = (
-                        self.bst[left_child_index] + self.right_sums[left_child_index]
-                    )
-                    self.right_sums[node] = (
-                        self.bst[right_child_index] + self.right_sums[right_child_index]
-                    )
+                    self.bst[node] = self.bst[left_child_index] + self.right_sums[left_child_index]
+                    self.right_sums[node] = self.bst[right_child_index] + self.right_sums[right_child_index]
 
             # Go up one level in the tree
             nodes_in_level = nodes_in_level // 2
@@ -98,9 +94,7 @@ class CumulativeSumTree:
                 self.bst[current] = self.bst[previous] + self.right_sums[previous]
             # We came from the right
             else:
-                self.right_sums[current] = (
-                    self.bst[previous] + self.right_sums[previous]
-                )
+                self.right_sums[current] = self.bst[previous] + self.right_sums[previous]
             # Move one tree level up
             current, previous = self._parent(current), current
 

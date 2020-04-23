@@ -23,9 +23,7 @@ class CumulativeSum:
         if not 0 <= search_weight <= self.get_sum():
             raise ValueError(f"queried weight must be between 0 and {self.get_sum()}")
 
-        index = np.searchsorted(
-            self.cumulative_weights, search_weight, side="left", sorter=None
-        )
+        index = np.searchsorted(self.cumulative_weights, search_weight, side="left", sorter=None)
         return index
 
     def update_weight(self, index, weight):

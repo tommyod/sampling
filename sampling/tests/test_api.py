@@ -58,8 +58,7 @@ class TestUrn:
         assert urn.size() == float("inf")
 
     @pytest.mark.parametrize(
-        "type_func, replace",
-        list(itertools.product((list, set, tuple, str), (True, False))),
+        "type_func, replace", list(itertools.product((list, set, tuple, str), (True, False))),
     )
     def test_input_types_unweighted(self, type_func, replace):
         """Test that common Python types work."""
@@ -67,9 +66,7 @@ class TestUrn:
         urn = Urn(data, replace=replace, weights=None)
         next(urn)
 
-    @pytest.mark.parametrize(
-        "type_func, replace", list(itertools.product((list, tuple), (True, False)))
-    )
+    @pytest.mark.parametrize("type_func, replace", list(itertools.product((list, tuple), (True, False))))
     def test_input_types_weighted(self, type_func, replace):
         """Test that common Python types work."""
         data = type_func("abcdef")
