@@ -3,25 +3,26 @@ import math
 from sampling.cumsum import CumulativeSum
 import numbers
 from collections.abc import Iterator, Hashable
+from abc import abstractmethod
 
 
-class WeightedFiniteUrn(Iterator):
+class WeightedUrn(Iterator):
     def __init__(self, population, weights):
-        # TODO: Better error messages
-        assert not isinstance(population, set)
-        assert not isinstance(weights, set)
-
         self._population = list(population)
-        assert all(isinstance(e, Hashable) for e in self._population)
-        assert len(self._population) == len(set(self._population))
+        self._weights = list(weights)
 
-        _weights = list(weights)
-        assert all(w >= 0 for w in _weights)
+        if len(self._population) != len(self._weights):
+            raise ValueError("'population' and 'weights' must have same length")
 
-        self._cumulative_sum_object = CumulativeSum(_weights)
+        if not all(isinstance(e, Hashable) for e in self._population):
+            raise TypeError("elements of population must be hashable.")
+        if len(self._population) != len(set(self._population)):
+            raise ValueError("population must contain unique elements.")
 
-    def __repr__(self):
-        return type(self).__name__
+        if all(w >= 0 for w in self._weights):
+            self._cumulative_sum_object = CumulativeSum(self._weights)
+        else:
+            raise ValueError("all weights must be greater than or equal to zero.")
 
     def __iter__(self):
         return self
@@ -32,10 +33,61 @@ class WeightedFiniteUrn(Iterator):
     def __contains__(self, value):
         return value in self._population
 
+    def update_weight(self, index, value):
+        if value < 0:
+            raise ValueError("'value' must be greater than or equal to zero.")
+
+        if isinstance(index, numbers.Integral):
+            self._cumulative_sum_object.update_weight(index, value)
+        else:
+            raise TypeError("'index' must be an integer")
+
+    def extend(self, elements, weights):
+        new_elements = list(elements)
+        if len(new_elements) != len(set(new_elements)):
+            raise ValueError("all elements in new population must be unique.")
+        if all(isinstance(e, Hashable) for e in new_elements):
+            self._population.extend(new_elements)
+        else:
+            raise TypeError("one or more values in 'elements' unhashable.")
+
+        new_weights = list(weights)
+        if all(w >= 0 for w in new_weights):
+            self._cumulative_sum_object.extend(new_weights)
+        else:
+            raise ValueError("all weights must be greater than or equal to zero.")
+
+    def add(self, element, weight):
+        self.extend([element], [weight])
+
+    def remove(self, element):
+        try:
+            index = self._population.index(element)
+        except ValueError:
+            raise ValueError(f"element {element} not in population.")
+        self._population.pop(index)
+        self._cumulative_sum_object.remove(index)
+
+    @abstractmethod
+    def __repr__(self):
+        pass
+
+    @abstractmethod
+    def __next__(self):
+        pass
+
+    @abstractmethod
+    def size(self):
+        pass
+
+
+class WeightedFiniteUrn(WeightedUrn):
+    def __repr__(self):
+        return type(self).__name__
+
     def __next__(self):
         if self.size() == 0:
             raise StopIteration
-
         pick = random.random() * self._cumulative_sum_object.get_sum()
         index = self._cumulative_sum_object.query(pick)
         value = self._population[index]
@@ -45,57 +97,10 @@ class WeightedFiniteUrn(Iterator):
     def size(self):
         return len(self._population)
 
-    def update_weight(self, index, value):
-        if not isinstance(index, numbers.Integral):
-            raise TypeError("'index' must be an integer")
-        assert value >= 0  # TODO: Proper type check
-        self._cumulative_sum_object.update_weight(index, value)
 
-    def extend(self, elements, weights):
-        assert not isinstance(elements, set)
-        assert not isinstance(weights, set)
-        _elements = list(elements)
-        self._population.extend(_elements)
-        assert all(isinstance(e, Hashable) for e in _elements)
-        assert len(_elements) == len(set(_elements))
-
-        self._cumulative_sum_object.extend(weights)
-
-    def add(self, element, weight):
-        self.extend([element], [weight])
-
-    def remove(self, element):
-        index = self._population.index(element)
-        self._population.pop(index)
-        self._cumulative_sum_object.remove(index)
-
-
-class WeightedInfiniteUrn(Iterator):
-    def __init__(self, population, weights):
-        # TODO: Better error messages
-        assert not isinstance(population, set)
-        assert not isinstance(weights, set)
-
-        self._population = list(population)
-        assert all(isinstance(e, Hashable) for e in self._population)
-        assert len(self._population) == len(set(self._population))
-
-        _weights = list(weights)
-        assert all(w >= 0 for w in _weights)
-
-        self._cumulative_sum_object = CumulativeSum(_weights)
-
+class WeightedInfiniteUrn(WeightedUrn):
     def __repr__(self):
         return type(self).__name__
-
-    def __iter__(self):
-        return self
-
-    def __bool__(self):
-        return self.size() > 0
-
-    def __contains__(self, value):
-        return value in self._population
 
     def __next__(self):
         if self.size() == 0:
@@ -108,30 +113,6 @@ class WeightedInfiniteUrn(Iterator):
     def size(self):
         # TODO: Think about what size of an infinite urn should mean
         return float("inf")
-
-    def update_weight(self, index, value):
-        if not isinstance(index, numbers.Integral):
-            raise TypeError("'index' must be an integer")
-        assert value >= 0  # TODO: Proper type check
-        self._cumulative_sum_object.update_weight(index, value)
-
-    def extend(self, elements, weights):
-        assert not isinstance(elements, set)
-        assert not isinstance(weights, set)
-        _elements = list(elements)
-        self._population.extend(_elements)
-        assert all(isinstance(e, Hashable) for e in _elements)
-        assert len(_elements) == len(set(_elements))
-
-        self._cumulative_sum_object.extend(weights)
-
-    def add(self, element, weight):
-        self.extend([element], [weight])
-
-    def remove(self, element):
-        index = self._population.index(element)
-        self._population.pop(index)
-        self._cumulative_sum_object.remove(index)
 
 
 class UnweightedFiniteUrn(Iterator):
@@ -171,10 +152,9 @@ class UnweightedFiniteUrn(Iterator):
 
     def extend(self, population):
         population = list(population)
-        extra_length = len(population)
         population.extend(self._population)
         self._population = population
-        self._num_remaining += extra_length
+        self._num_remaining = len(self._population)
 
     def add(self, element):
         # TODO: Better checking
@@ -237,15 +217,18 @@ def Urn(population, replace=False, weights=None):
         weights : Sequence
             An indexable, iterable (mutable) sequence of weights corresponding to population (default None)
     """
-
-    if replace and weights:
-        return WeightedInfiniteUrn(population, weights)
-    elif not replace and weights:
-        return WeightedFiniteUrn(population, weights)
-    elif replace and weights is None:
-        return UnweightedInfiniteUrn(population)
-    elif not replace and weights is None:
-        return UnweightedFiniteUrn(population)
-    else:
-        # TODO: Raise proper exception
-        raise Exception
+    try:
+        # Weighted urns
+        if weights:
+            if replace:
+                return WeightedInfiniteUrn(population, weights)
+            else:
+                return WeightedFiniteUrn(population, weights)
+        # Unweighted urns
+        else:
+            if replace:
+                return UnweightedInfiniteUrn(population)
+            else:
+                return UnweightedFiniteUrn(population)
+    except Exception as e:
+        raise e

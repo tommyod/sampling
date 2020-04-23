@@ -15,9 +15,9 @@ import pytest
 @pytest.mark.parametrize("num_weights", [10, 100, 1000])
 def test_query(num_weights):
     """Test that:
-     - The sum of weights to the left of the returned index is smaller 
+     - The sum of weights to the left of the returned index is smaller
         than the query weight
-     - The sum of weights to the left of the return index + the weight 
+     - The sum of weights to the left of the return index + the weight
         associated with the index is greater than the query weight
     """
 

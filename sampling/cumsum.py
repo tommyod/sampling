@@ -12,14 +12,16 @@ import numpy as np
 class CumulativeSum:
     def __init__(self, weights):
         self.weights = np.array(weights)
-        assert np.all(self.weights > 0)
+        if np.any(self.weights < 0):
+            raise ValueError("all weights must be greater than or equal to zero.")
         self.cumulative_weights = np.cumsum(self.weights)
 
     def get_sum(self):
         return self.cumulative_weights[-1]
 
     def query(self, search_weight):
-        assert 0 <= search_weight <= self.get_sum()
+        if not 0 <= search_weight <= self.get_sum():
+            raise ValueError(f"queried weight must be between 0 and {self.get_sum()}")
 
         index = np.searchsorted(self.cumulative_weights, search_weight, side="left", sorter=None)
         return index

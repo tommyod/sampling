@@ -1,2 +1,7 @@
 *__pycache__*
 *egg-info*
+.venv
+.vscode
+*.in
+.mypy_cache
+.pytest_cache
